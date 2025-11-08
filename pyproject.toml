@@ -74,7 +74,9 @@ oh_my_theme = ["*.py"]
 line-length = 88
 
 [tool.ruff]
+fix = true
 lint.select = ["ALL"]
+lint.ignore = ["COM812", "D203", "D213"]
 lint.fixable = ["ALL"]
 
 [tool.pytest.ini_options]
