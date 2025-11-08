@@ -1,66 +1,68 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61", "wheel"]
 
 [project]
 name = "oh-my-theme"
 version = "2.0.0"
 description = "Terminal-based theme manager for Oh My Posh with preview, search, custom repositories, and theme customization"
 readme = "README.md"
-license = "MIT"
-authors = [
-    { name = "AccidentallyStable", email = "accidentallystable@proton.com" },
+keywords = [
+    "bash",
+    "color-editor",
+    "customization",
+    "fish",
+    "git",
+    "oh-my-posh",
+    "prompt",
+    "search",
+    "shell",
+    "terminal",
+    "theme",
+    "zsh",
 ]
+license = "MIT"
 maintainers = [
     { name = "Accidentallystable", email = "accidentallystable@proton.com" },
 ]
-keywords = [
-    "oh-my-posh",
-    "terminal",
-    "theme",
-    "prompt",
-    "shell",
-    "bash",
-    "zsh",
-    "fish",
-    "customization",
-    "search",
-    "git",
-    "color-editor",
+authors = [
+    { name = "AccidentallyStable", email = "accidentallystable@proton.com" },
 ]
+requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console :: Curses",
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
-    "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: System :: Shells",
     "Topic :: Terminals",
     "Topic :: Utilities",
 ]
-requires-python = ">=3.7"
-dependencies = ["windows-curses>=2.4.1; platform_system == 'Windows'"]
+dependencies = ["windows-curses>=2.4.1; platform_system=='Windows'"]
 
-[project.urls]
-Homepage = "https://github.com/mikeisfree/oh-my-theme"
-Repository = "https://github.com/mikeisfree/oh-my-theme"
-Issues = "https://github.com/mikeisfree/oh-my-theme/issues"
-Documentation = "https://github.com/mikeisfree/oh-my-theme#readme"
-
-[project.scripts]
-omt = "oh_my_theme.main:main"
-
-[project.optional-dependencies]
-dev = ["pytest>=6.0", "pytest-cov", "black", "flake8", "mypy"]
+optional-dependencies.dev = [
+    "black",
+    "flake8",
+    "mypy",
+    "pytest>=6",
+    "pytest-cov",
+]
+urls.Documentation = "https://github.com/mikeisfree/oh-my-theme#readme"
+urls.Homepage = "https://github.com/mikeisfree/oh-my-theme"
+urls.Issues = "https://github.com/mikeisfree/oh-my-theme/issues"
+urls.Repository = "https://github.com/mikeisfree/oh-my-theme"
+scripts.omt = "oh_my_theme.main:main"
 
 [tool.setuptools]
 packages = ["oh_my_theme"]
