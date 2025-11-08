@@ -260,10 +260,9 @@ def draw_panel_with_search(
             # Handle highlighting if searching
             if search_query:
                 highlight_parts = highlight_match(item_name, search_query)
-                display_text = prefix
 
                 # Calculate available width
-                available_width = w - 4 - len(prefix)
+                w - 4 - len(prefix)
 
                 if list_idx == selection_idx:
                     win.attron(

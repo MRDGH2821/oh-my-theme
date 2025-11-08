@@ -204,7 +204,7 @@ def _get_sample_prompt(theme_path):
             sample_lines.append("")
 
         # Add final prompt symbol
-        final_prompt = theme_data.get("final_space", True)
+        theme_data.get("final_space", True)
         if sample_lines:
             if theme_data.get("transient_prompt"):
                 sample_lines.append("❯ ")
