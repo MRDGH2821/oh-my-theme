@@ -73,6 +73,10 @@ oh_my_theme = ["*.py"]
 [tool.black]
 line-length = 88
 
+[tool.ruff]
+lint.select = ["ALL"]
+lint.fixable = ["ALL"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
