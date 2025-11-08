@@ -4,6 +4,7 @@ This module provides functionality to customize theme colors through a simple
 curses-based interface, allowing users to modify segment colors and save
 changes as new themes or overwrite existing ones.
 """
+
 from __future__ import annotations
 
 import curses
@@ -50,7 +51,6 @@ def show_color_editor(stdscr, theme_path: str) -> dict[str, Any] | None:
     return _apply_color_changes(theme_data, modified_colors)
 
 
-
 def extract_segment_colors(theme_data: dict[str, Any]) -> dict[str, dict[str, str]]:
     """Parse theme JSON to extract segment color information.
 
@@ -92,7 +92,9 @@ def extract_segment_colors(theme_data: dict[str, Any]) -> dict[str, dict[str, st
 
 
 def save_theme_changes(
-    theme_data: dict[str, Any], original_path: str, new_name: str | None = None,
+    theme_data: dict[str, Any],
+    original_path: str,
+    new_name: str | None = None,
 ) -> tuple[bool, str]:
     """Save modified theme as new file or overwrite original.
 
@@ -131,7 +133,8 @@ def save_theme_changes(
 
 
 def _show_color_selection_interface(
-    stdscr, segment_colors: dict[str, dict[str, Any]],
+    stdscr,
+    segment_colors: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, str]] | None:
     """Display the color selection interface.
 
@@ -224,19 +227,33 @@ def _show_color_selection_interface(
 
                 # Create display text with color preview
                 display_text = _create_color_display_text(
-                    item["segment_type"], color_type, current_color, is_modified, w - 4,
+                    item["segment_type"],
+                    color_type,
+                    current_color,
+                    is_modified,
+                    w - 4,
                 )
 
                 y_pos = list_start_y + i
                 if list_idx == selection:
                     stdscr.attron(curses.color_pair(3))
                     _render_color_line(
-                        stdscr, y_pos, 2, display_text, current_color, color_support,
+                        stdscr,
+                        y_pos,
+                        2,
+                        display_text,
+                        current_color,
+                        color_support,
                     )
                     stdscr.attroff(curses.color_pair(3))
                 else:
                     _render_color_line(
-                        stdscr, y_pos, 2, display_text, current_color, color_support,
+                        stdscr,
+                        y_pos,
+                        2,
+                        display_text,
+                        current_color,
+                        color_support,
                     )
 
         # Status line
@@ -272,7 +289,10 @@ def _show_color_selection_interface(
                 current_value = modified_colors[segment_id][color_type]
 
             new_color = _show_color_input_dialog(
-                stdscr, item["segment_type"], color_type, current_value,
+                stdscr,
+                item["segment_type"],
+                color_type,
+                current_value,
             )
             if new_color is not None:
                 if segment_id not in modified_colors:
@@ -281,7 +301,10 @@ def _show_color_selection_interface(
 
 
 def _show_color_input_dialog(
-    stdscr, segment_type: str, color_type: str, current_value: str,
+    stdscr,
+    segment_type: str,
+    color_type: str,
+    current_value: str,
 ) -> str | None:
     """Show dialog for color input.
 
@@ -364,7 +387,8 @@ def _show_color_input_dialog(
 
 
 def _apply_color_changes(
-    theme_data: dict[str, Any], modified_colors: dict[str, dict[str, str]],
+    theme_data: dict[str, Any],
+    modified_colors: dict[str, dict[str, str]],
 ) -> dict[str, Any]:
     """Apply color changes to theme data.
 
@@ -665,7 +689,9 @@ def _get_color_pair(hex_color: str, color_support: str) -> int | None:
         if color_support == "256color":
             color_index = _get_closest_256_color(hex_color)
             curses.init_pair(
-                _next_color_pair, color_index, -1,
+                _next_color_pair,
+                color_index,
+                -1,
             )  # -1 for default background
         elif color_support == "truecolor":
             r, g, b = _hex_to_rgb(hex_color)
@@ -718,7 +744,12 @@ def _create_color_display_text(
 
 
 def _render_color_line(
-    stdscr, y: int, x: int, text: str, hex_color: str, color_support: str,
+    stdscr,
+    y: int,
+    x: int,
+    text: str,
+    hex_color: str,
+    color_support: str,
 ) -> None:
     """Render a line with color preview.
 

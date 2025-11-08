@@ -474,7 +474,9 @@ def download_theme(theme_name) -> bool:
                 if matching_theme:
                     # Install just this one theme
                     success_count, _errors = install_custom_themes(
-                        [matching_theme], repo_url, THEMES_DIR,
+                        [matching_theme],
+                        repo_url,
+                        THEMES_DIR,
                     )
                     if success_count > 0:
                         return True
@@ -525,7 +527,9 @@ def download_theme_for_preview(theme_name) -> bool:
                 if matching_theme:
                     # Install just this one theme silently
                     success_count, _errors = install_custom_themes(
-                        [matching_theme], repo_url, THEMES_DIR,
+                        [matching_theme],
+                        repo_url,
+                        THEMES_DIR,
                     )
                     if success_count > 0:
                         return True
@@ -876,7 +880,10 @@ def main_ui(stdscr) -> None:
         if current_status_height != last_status_height or not panel_wins:
             panel_width = w // 2
             local_panel = curses.newwin(
-                h - current_status_height - 1, panel_width, current_status_height, 0,
+                h - current_status_height - 1,
+                panel_width,
+                current_status_height,
+                0,
             )
             remote_panel = curses.newwin(
                 h - current_status_height - 1,
@@ -979,7 +986,8 @@ def main_ui(stdscr) -> None:
                 # Update search state if active
                 if search_state["active"]:
                     search_state["filtered_local"] = filter_themes(
-                        local_themes, search_state["query"],
+                        local_themes,
+                        search_state["query"],
                     )
             show_status_message(stdscr, message)
 
@@ -994,7 +1002,8 @@ def main_ui(stdscr) -> None:
         elif key == ord("i") or key == ord("I"):  # Install selected themes
             if selected_for_install:
                 if show_confirmation(
-                    stdscr, f"Install {len(selected_for_install)} theme(s)?",
+                    stdscr,
+                    f"Install {len(selected_for_install)} theme(s)?",
                 ):
                     installed_count = 0
                     for theme in list(selected_for_install):
@@ -1009,11 +1018,13 @@ def main_ui(stdscr) -> None:
                     # Update search state if active
                     if search_state["active"]:
                         search_state["filtered_local"] = filter_themes(
-                            local_themes, search_state["query"],
+                            local_themes,
+                            search_state["query"],
                         )
 
                     show_status_message(
-                        stdscr, f"Installed {installed_count} theme(s)!",
+                        stdscr,
+                        f"Installed {installed_count} theme(s)!",
                     )
             else:
                 show_status_message(stdscr, "No themes selected for installation")
@@ -1029,7 +1040,8 @@ def main_ui(stdscr) -> None:
                 if is_local_theme:
                     # For local themes, use optimized metadata retrieval
                     metadata, _was_downloaded = get_theme_metadata_optimized(
-                        selected_theme, is_local=True,
+                        selected_theme,
+                        is_local=True,
                     )
                     if metadata:
                         show_theme_preview(
@@ -1040,23 +1052,29 @@ def main_ui(stdscr) -> None:
                         )
                     else:
                         show_status_message(
-                            stdscr, "Preview unavailable - could not read theme file",
+                            stdscr,
+                            "Preview unavailable - could not read theme file",
                         )
 
                 else:  # Remote theme
                     # Check if theme already exists locally
                     local_theme_path = os.path.join(
-                        THEMES_DIR, f"{selected_theme}.omp.json",
+                        THEMES_DIR,
+                        f"{selected_theme}.omp.json",
                     )
 
                     if os.path.exists(local_theme_path):
                         # Theme already downloaded, just show preview
                         show_theme_preview(
-                            stdscr, selected_theme, None, downloaded_for_preview=False,
+                            stdscr,
+                            selected_theme,
+                            None,
+                            downloaded_for_preview=False,
                         )
                     # Ask permission before downloading
                     elif show_confirmation(
-                        stdscr, f"Download '{selected_theme}' for preview?",
+                        stdscr,
+                        f"Download '{selected_theme}' for preview?",
                     ):
                         # User agreed to download, show preview (it will handle download and keep/remove dialog)
                         keep_theme = show_theme_preview(
@@ -1074,7 +1092,8 @@ def main_ui(stdscr) -> None:
                             # Update search state if active
                             if search_state["active"]:
                                 search_state["filtered_local"] = filter_themes(
-                                    local_themes, search_state["query"],
+                                    local_themes,
+                                    search_state["query"],
                                 )
 
                             show_status_message(
@@ -1094,7 +1113,8 @@ def main_ui(stdscr) -> None:
                             )
                     else:
                         show_status_message(
-                            stdscr, f"Preview cancelled for '{selected_theme}'",
+                            stdscr,
+                            f"Preview cancelled for '{selected_theme}'",
                         )
 
         elif (key == curses.KEY_ENTER or key in [10, 13]) and (
@@ -1108,7 +1128,8 @@ def main_ui(stdscr) -> None:
                     if update_shell_config(selected_theme, shell, config_file):
                         active_theme = selected_theme  # Update active theme
                         show_status_message(
-                            stdscr, f"Theme '{selected_theme}' activated!",
+                            stdscr,
+                            f"Theme '{selected_theme}' activated!",
                         )
                     else:
                         show_status_message(stdscr, "Failed to activate theme")
@@ -1126,7 +1147,8 @@ def main_ui(stdscr) -> None:
                         # Update search state if active
                         if search_state["active"]:
                             search_state["filtered_local"] = filter_themes(
-                                local_themes, search_state["query"],
+                                local_themes,
+                                search_state["query"],
                             )
                             current_local = search_state["filtered_local"]
                         else:
@@ -1143,7 +1165,8 @@ def main_ui(stdscr) -> None:
                             active_theme = get_active_theme(config_file)
 
                         show_status_message(
-                            stdscr, f"Theme '{selected_theme}' removed!",
+                            stdscr,
+                            f"Theme '{selected_theme}' removed!",
                         )
                     else:
                         show_status_message(stdscr, "Failed to remove theme")
@@ -1172,12 +1195,15 @@ def main_ui(stdscr) -> None:
                 if modified_theme_data is not None:
                     # Show save options dialog
                     new_name, overwrite = _show_save_options_dialog(
-                        stdscr, selected_theme,
+                        stdscr,
+                        selected_theme,
                     )
 
                     if overwrite or new_name:
                         success, result_path_or_error = save_theme_changes(
-                            modified_theme_data, theme_path, new_name,
+                            modified_theme_data,
+                            theme_path,
+                            new_name,
                         )
 
                         if success:
@@ -1189,22 +1215,26 @@ def main_ui(stdscr) -> None:
                                 # Update search state if active
                                 if search_state["active"]:
                                     search_state["filtered_local"] = filter_themes(
-                                        local_themes, search_state["query"],
+                                        local_themes,
+                                        search_state["query"],
                                     )
                                     current_local = search_state["filtered_local"]
                                 else:
                                     current_local = local_themes
 
                                 show_status_message(
-                                    stdscr, f"Theme saved as '{new_name}'!",
+                                    stdscr,
+                                    f"Theme saved as '{new_name}'!",
                                 )
                             else:
                                 show_status_message(
-                                    stdscr, f"Theme '{selected_theme}' updated!",
+                                    stdscr,
+                                    f"Theme '{selected_theme}' updated!",
                                 )
                         else:
                             show_status_message(
-                                stdscr, f"Error: {result_path_or_error}",
+                                stdscr,
+                                f"Error: {result_path_or_error}",
                             )
                     else:
                         show_status_message(stdscr, "Customization cancelled")

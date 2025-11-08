@@ -180,7 +180,9 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
         filtered_local = filter_themes(local_themes, query)
         filtered_remote = filter_themes(remote_themes, query)
         search_win.addstr(
-            2, 2, f"Found: {len(filtered_local)} local, {len(filtered_remote)} remote",
+            2,
+            2,
+            f"Found: {len(filtered_local)} local, {len(filtered_remote)} remote",
         )
 
         search_win.refresh()

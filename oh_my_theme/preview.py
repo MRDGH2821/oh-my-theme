@@ -1,6 +1,7 @@
 """Simple theme preview module for Oh My Theme.
 Shows basic metadata and prompt structure.
 """
+
 from __future__ import annotations
 
 import json
@@ -266,7 +267,10 @@ def _show_error(stdscr, message) -> None:
 
     h, w = stdscr.getmaxyx()
     dialog = curses.newwin(
-        5, len(message) + 10, h // 2 - 2, w // 2 - len(message) // 2 - 5,
+        5,
+        len(message) + 10,
+        h // 2 - 2,
+        w // 2 - len(message) // 2 - 5,
     )
     dialog.box()
     dialog.addstr(1, 2, "Error:")

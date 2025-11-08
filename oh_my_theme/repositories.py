@@ -3,6 +3,7 @@
 This module provides functionality to add custom Git repositories,
 fetch .omp.json theme files, and install them locally.
 """
+
 from __future__ import annotations
 
 import curses
@@ -419,7 +420,9 @@ def handle_add_repository(stdscr, themes_dir):
         status_dialog.attroff(curses.color_pair(2))
         status_dialog.addstr(1, 2, "Failed to fetch themes:")
         status_dialog.addstr(
-            2, 2, error_msg[:45] + "..." if len(error_msg) > 45 else error_msg,
+            2,
+            2,
+            error_msg[:45] + "..." if len(error_msg) > 45 else error_msg,
         )
         status_dialog.addstr(3, 2, "Press any key to continue...")
         status_dialog.refresh()
@@ -468,7 +471,10 @@ def handle_add_repository(stdscr, themes_dir):
 
     # Perform installation with progress
     success_count, total_count, errors = show_installation_progress(
-        stdscr, theme_files, repo_url, themes_dir,
+        stdscr,
+        theme_files,
+        repo_url,
+        themes_dir,
     )
 
     if success_count > 0:
