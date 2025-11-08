@@ -8,7 +8,6 @@ fetch .omp.json theme files, and install them locally.
 import os
 import json
 import curses
-import re
 from urllib import request
 from urllib.parse import urlparse
 
@@ -226,7 +225,7 @@ def fetch_themes_from_repo(repo_url):
                 else:
                     return [], f"Failed to access repository (HTTP {response.status})"
 
-        except Exception as e:
+        except Exception:
             # GitHub API failed, try alternative approach
             pass
 

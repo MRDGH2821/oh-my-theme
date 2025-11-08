@@ -6,7 +6,6 @@ local and remote themes with highlighting and keyboard navigation.
 """
 
 import curses
-import re
 
 
 def show_search_bar(stdscr):

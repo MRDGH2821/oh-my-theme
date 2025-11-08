@@ -9,7 +9,7 @@ changes as new themes or overwrite existing ones.
 import os
 import json
 import curses
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, Optional, Tuple, Any
 
 
 def show_color_editor(stdscr, theme_path: str) -> Optional[Dict[str, Any]]:

@@ -63,7 +63,6 @@ def extract_theme_metadata(theme_path):
 
 def show_enhanced_preview(stdscr, theme_name, is_local=True):
     """Show simple preview dialog."""
-    import curses
 
     themes_dir = os.path.expanduser("~/.poshthemes")
     theme_path = os.path.join(themes_dir, f"{theme_name}.omp.json")
@@ -217,7 +216,7 @@ def _get_sample_prompt(theme_path):
 
         return "\n".join(sample_lines)
 
-    except Exception as e:
+    except Exception:
         # Fallback for any parsing errors
         return "john ~/projects/my-app git(main) 15:04\n❯ "
 

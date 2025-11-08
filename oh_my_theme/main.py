@@ -5,7 +5,6 @@ import re
 import curses
 from urllib import request
 from collections import OrderedDict
-import time
 
 # Import new modules for search and repository functionality
 try:
@@ -288,7 +287,7 @@ def parse_theme_metadata(theme_path):
         _theme_cache.put(theme_path, metadata)
         return metadata
 
-    except (json.JSONDecodeError, KeyError, IOError) as e:
+    except (json.JSONDecodeError, KeyError, IOError):
         # Return basic info even if parsing fails
         theme_name = (
             os.path.basename(theme_path).replace(".omp.json", "")
@@ -1041,7 +1040,7 @@ def main_ui(stdscr):
                         )
                     else:
                         show_status_message(
-                            stdscr, f"Preview unavailable - could not read theme file"
+                            stdscr, "Preview unavailable - could not read theme file"
                         )
 
                 else:  # Remote theme
