@@ -1,6 +1,7 @@
 """Configuration management for Oh My Theme.
 Handles storage and retrieval of custom repositories and settings.
 """
+from __future__ import annotations
 
 import json
 import os
@@ -9,7 +10,7 @@ CONFIG_DIR = os.path.expanduser("~/.config/oh-my-theme")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 
 
-def ensure_config_dir():
+def ensure_config_dir() -> None:
     """Ensure the configuration directory exists."""
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
@@ -44,7 +45,7 @@ def load_config():
         return default_config
 
 
-def save_config(config):
+def save_config(config) -> bool | None:
     """Save configuration to file.
 
     Args:

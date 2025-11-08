@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import curses
 import json
 import os
@@ -67,7 +69,7 @@ def fetch_remote_themes():
         except Exception:
             continue  # Skip failed repositories
 
-    return sorted(list(all_themes))
+    return sorted(all_themes)
 
 
 def get_local_themes():
@@ -76,10 +78,9 @@ def get_local_themes():
         return []
     try:
         files = os.listdir(THEMES_DIR)
-        themes = sorted(
+        return sorted(
             [f.replace(".omp.json", "") for f in files if f.endswith(".omp.json")],
         )
-        return themes
     except OSError:
         return []
 
@@ -104,14 +105,13 @@ def get_active_theme(config_file):
                 config_match = config_pattern.search(line)
                 if config_match:
                     theme_path = config_match.group(1)
-                    theme_name = os.path.basename(theme_path).replace(".omp.json", "")
-                    return theme_name
+                    return os.path.basename(theme_path).replace(".omp.json", "")
         return None
     except Exception:
         return None
 
 
-def remove_theme(theme_name):
+def remove_theme(theme_name) -> bool | None:
     """Removes a theme file from local storage and clears it from cache."""
     theme_path = os.path.join(THEMES_DIR, f"{theme_name}.omp.json")
     try:
@@ -135,7 +135,7 @@ def remove_theme(theme_name):
 class ThemeMetadataCache:
     """Simple in-memory cache for theme metadata with LRU eviction and file modification tracking."""
 
-    def __init__(self, max_size=MAX_CACHE_SIZE):
+    def __init__(self, max_size=MAX_CACHE_SIZE) -> None:
         self.max_size = max_size
         self.cache = OrderedDict()  # Maintains insertion order for LRU
         self.file_timestamps = {}  # Track file modification times
@@ -178,7 +178,7 @@ class ThemeMetadataCache:
 
         return None
 
-    def put(self, theme_path, metadata):
+    def put(self, theme_path, metadata) -> None:
         """Store metadata in cache with LRU eviction."""
         if not os.path.exists(theme_path):
             return
@@ -199,7 +199,7 @@ class ThemeMetadataCache:
         except OSError:
             pass  # Ignore if we can't get file timestamp
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all cached data."""
         self.cache.clear()
         self.file_timestamps.clear()
@@ -308,7 +308,7 @@ def parse_theme_metadata(theme_path):
         return fallback_metadata
 
 
-def _generate_description_from_segments(segment_types):
+def _generate_description_from_segments(segment_types) -> str:
     """Generate a description based on the segments present in the theme."""
     if not segment_types:
         return "Simple theme with basic prompt"
@@ -334,7 +334,7 @@ def _generate_description_from_segments(segment_types):
     return f"Custom theme with {len(segment_types)} segments"
 
 
-def _determine_complexity(segment_count):
+def _determine_complexity(segment_count) -> str:
     """Determine theme complexity based on number of segments."""
     if segment_count <= 3:
         return "Simple"
@@ -387,7 +387,7 @@ def get_shell_info():
     return shell_name, config_file
 
 
-def update_shell_config(theme_name, shell, config_file):
+def update_shell_config(theme_name, shell, config_file) -> bool | None:
     """Removes all existing Oh My Posh theme lines and activates the selected theme."""
     print(f"Activating theme '{theme_name}' in {os.path.basename(config_file)}...")
     local_theme_path = os.path.join(THEMES_DIR, f"{theme_name}.omp.json")
@@ -432,7 +432,7 @@ def update_shell_config(theme_name, shell, config_file):
         return False
 
 
-def download_theme(theme_name):
+def download_theme(theme_name) -> bool:
     """Downloads a single theme file from official or custom repositories."""
     if not os.path.exists(THEMES_DIR):
         os.makedirs(THEMES_DIR)
@@ -473,7 +473,7 @@ def download_theme(theme_name):
 
                 if matching_theme:
                     # Install just this one theme
-                    success_count, errors = install_custom_themes(
+                    success_count, _errors = install_custom_themes(
                         [matching_theme], repo_url, THEMES_DIR,
                     )
                     if success_count > 0:
@@ -485,7 +485,7 @@ def download_theme(theme_name):
     return False
 
 
-def download_theme_for_preview(theme_name):
+def download_theme_for_preview(theme_name) -> bool:
     """Downloads a theme file silently for preview purposes from any repository."""
     if not os.path.exists(THEMES_DIR):
         os.makedirs(THEMES_DIR)
@@ -524,7 +524,7 @@ def download_theme_for_preview(theme_name):
 
                 if matching_theme:
                     # Install just this one theme silently
-                    success_count, errors = install_custom_themes(
+                    success_count, _errors = install_custom_themes(
                         [matching_theme], repo_url, THEMES_DIR,
                     )
                     if success_count > 0:
@@ -564,7 +564,7 @@ def get_theme_metadata_optimized(theme_name, is_local=False):
     return None, False
 
 
-def clear_theme_cache():
+def clear_theme_cache() -> None:
     """Clear the theme metadata cache. Useful for testing or memory management."""
     _theme_cache.clear()
 
@@ -595,7 +595,7 @@ def draw_panel(
     is_active,
     selected_items=None,
     active_theme=None,
-):
+) -> None:
     """Draws a single panel window."""
     win.clear()
     border_color = curses.color_pair(2) if is_active else curses.color_pair(1)
@@ -635,7 +635,7 @@ def draw_panel(
     win.refresh()
 
 
-def show_confirmation(stdscr, message):
+def show_confirmation(stdscr, message) -> bool | None:
     """Shows a confirmation dialog and returns True for Y, False for N."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 5, min(len(message) + 10, w - 4)
@@ -659,7 +659,7 @@ def show_confirmation(stdscr, message):
             return False
 
 
-def show_keep_theme_dialog(stdscr, theme_name):
+def show_keep_theme_dialog(stdscr, theme_name) -> bool | None:
     """Shows a dialog asking whether to keep the downloaded theme."""
     h, w = stdscr.getmaxyx()
     message = f"Keep downloaded theme '{theme_name}'?"
@@ -712,7 +712,7 @@ def show_theme_preview(stdscr, theme_name, metadata, downloaded_for_preview=Fals
     return show_enhanced_preview(stdscr, theme_name, is_local)
 
 
-def show_status_message(stdscr, message, duration=2):
+def show_status_message(stdscr, message, duration=2) -> None:
     """Shows a temporary status message."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 3, min(len(message) + 4, w - 4)
@@ -788,7 +788,7 @@ def wrap_status_line(status_text, width, max_lines=2):
     return lines
 
 
-def show_action_choice(stdscr, theme_name):
+def show_action_choice(stdscr, theme_name) -> str | None:
     """Shows a dialog to choose between Activate, Remove, or Customize for local themes."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 8, min(50, w - 4)
@@ -819,7 +819,7 @@ def show_action_choice(stdscr, theme_name):
             return "cancel"
 
 
-def main_ui(stdscr):
+def main_ui(stdscr) -> None:
     """The main application UI logic, wrapped by curses."""
     curses.curs_set(0)
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)  # Default
@@ -901,7 +901,7 @@ def main_ui(stdscr):
         # Handle scrolling for the active panel
         active_list = current_panels[active_panel_idx]
         if active_list:  # Only handle scrolling if list is not empty
-            h_panel, w_panel = panel_wins[active_panel_idx].getmaxyx()
+            h_panel, _w_panel = panel_wins[active_panel_idx].getmaxyx()
             menu_height = h_panel - 2
             if selections[active_panel_idx] < scroll_tops[active_panel_idx]:
                 scroll_tops[active_panel_idx] = selections[active_panel_idx]
@@ -1028,7 +1028,7 @@ def main_ui(stdscr):
 
                 if is_local_theme:
                     # For local themes, use optimized metadata retrieval
-                    metadata, was_downloaded = get_theme_metadata_optimized(
+                    metadata, _was_downloaded = get_theme_metadata_optimized(
                         selected_theme, is_local=True,
                     )
                     if metadata:
@@ -1097,123 +1097,122 @@ def main_ui(stdscr):
                             stdscr, f"Preview cancelled for '{selected_theme}'",
                         )
 
-        elif key == curses.KEY_ENTER or key in [10, 13]:
-            if (
-                active_panel_idx == 0 and current_local
-            ):  # Local theme - show action choice
-                selected_theme = current_local[selections[0]]
-                action = show_action_choice(stdscr, selected_theme)
+        elif (key == curses.KEY_ENTER or key in [10, 13]) and (
+            active_panel_idx == 0 and current_local
+        ):  # Local theme - show action choice
+            selected_theme = current_local[selections[0]]
+            action = show_action_choice(stdscr, selected_theme)
 
-                if action == "activate":
-                    if show_confirmation(stdscr, f"Activate theme '{selected_theme}'?"):
-                        if update_shell_config(selected_theme, shell, config_file):
-                            active_theme = selected_theme  # Update active theme
-                            show_status_message(
-                                stdscr, f"Theme '{selected_theme}' activated!",
+            if action == "activate":
+                if show_confirmation(stdscr, f"Activate theme '{selected_theme}'?"):
+                    if update_shell_config(selected_theme, shell, config_file):
+                        active_theme = selected_theme  # Update active theme
+                        show_status_message(
+                            stdscr, f"Theme '{selected_theme}' activated!",
+                        )
+                    else:
+                        show_status_message(stdscr, "Failed to activate theme")
+
+            elif action == "remove":
+                if show_confirmation(
+                    stdscr,
+                    f"This will permanently remove {selected_theme}.omp.json file",
+                ):
+                    if remove_theme(selected_theme):
+                        # Refresh local themes list
+                        local_themes = get_local_themes()
+                        panels[0] = local_themes
+
+                        # Update search state if active
+                        if search_state["active"]:
+                            search_state["filtered_local"] = filter_themes(
+                                local_themes, search_state["query"],
                             )
+                            current_local = search_state["filtered_local"]
                         else:
-                            show_status_message(stdscr, "Failed to activate theme")
+                            current_local = local_themes
 
-                elif action == "remove":
-                    if show_confirmation(
-                        stdscr,
-                        f"This will permanently remove {selected_theme}.omp.json file",
-                    ):
-                        if remove_theme(selected_theme):
-                            # Refresh local themes list
-                            local_themes = get_local_themes()
-                            panels[0] = local_themes
+                        # Adjust selection if needed
+                        if selections[0] >= len(current_local) and current_local:
+                            selections[0] = len(current_local) - 1
+                        elif not current_local:
+                            selections[0] = 0
 
-                            # Update search state if active
-                            if search_state["active"]:
-                                search_state["filtered_local"] = filter_themes(
-                                    local_themes, search_state["query"],
-                                )
-                                current_local = search_state["filtered_local"]
-                            else:
-                                current_local = local_themes
+                        # Update active theme if we removed the active one
+                        if active_theme == selected_theme:
+                            active_theme = get_active_theme(config_file)
 
-                            # Adjust selection if needed
-                            if selections[0] >= len(current_local) and current_local:
-                                selections[0] = len(current_local) - 1
-                            elif not current_local:
-                                selections[0] = 0
-
-                            # Update active theme if we removed the active one
-                            if active_theme == selected_theme:
-                                active_theme = get_active_theme(config_file)
-
-                            show_status_message(
-                                stdscr, f"Theme '{selected_theme}' removed!",
-                            )
-                        else:
-                            show_status_message(stdscr, "Failed to remove theme")
-
-                elif action == "customize":
-                    # Import editor module
-                    try:
-                        from .editor import (
-                            _show_save_options_dialog,
-                            save_theme_changes,
-                            show_color_editor,
+                        show_status_message(
+                            stdscr, f"Theme '{selected_theme}' removed!",
                         )
-                    except ImportError:
-                        # Fallback for when running main.py directly
-                        from editor import (
-                            _show_save_options_dialog,
-                            save_theme_changes,
-                            show_color_editor,
+                    else:
+                        show_status_message(stdscr, "Failed to remove theme")
+
+            elif action == "customize":
+                # Import editor module
+                try:
+                    from .editor import (
+                        _show_save_options_dialog,
+                        save_theme_changes,
+                        show_color_editor,
+                    )
+                except ImportError:
+                    # Fallback for when running main.py directly
+                    from editor import (
+                        _show_save_options_dialog,
+                        save_theme_changes,
+                        show_color_editor,
+                    )
+
+                theme_path = os.path.join(THEMES_DIR, f"{selected_theme}.omp.json")
+
+                # Show color editor
+                modified_theme_data = show_color_editor(stdscr, theme_path)
+
+                if modified_theme_data is not None:
+                    # Show save options dialog
+                    new_name, overwrite = _show_save_options_dialog(
+                        stdscr, selected_theme,
+                    )
+
+                    if overwrite or new_name:
+                        success, result_path_or_error = save_theme_changes(
+                            modified_theme_data, theme_path, new_name,
                         )
 
-                    theme_path = os.path.join(THEMES_DIR, f"{selected_theme}.omp.json")
+                        if success:
+                            if new_name:
+                                # Refresh local themes list to show new theme
+                                local_themes = get_local_themes()
+                                panels[0] = local_themes
 
-                    # Show color editor
-                    modified_theme_data = show_color_editor(stdscr, theme_path)
-
-                    if modified_theme_data is not None:
-                        # Show save options dialog
-                        new_name, overwrite = _show_save_options_dialog(
-                            stdscr, selected_theme,
-                        )
-
-                        if overwrite or new_name:
-                            success, result_path_or_error = save_theme_changes(
-                                modified_theme_data, theme_path, new_name,
-                            )
-
-                            if success:
-                                if new_name:
-                                    # Refresh local themes list to show new theme
-                                    local_themes = get_local_themes()
-                                    panels[0] = local_themes
-
-                                    # Update search state if active
-                                    if search_state["active"]:
-                                        search_state["filtered_local"] = filter_themes(
-                                            local_themes, search_state["query"],
-                                        )
-                                        current_local = search_state["filtered_local"]
-                                    else:
-                                        current_local = local_themes
-
-                                    show_status_message(
-                                        stdscr, f"Theme saved as '{new_name}'!",
+                                # Update search state if active
+                                if search_state["active"]:
+                                    search_state["filtered_local"] = filter_themes(
+                                        local_themes, search_state["query"],
                                     )
+                                    current_local = search_state["filtered_local"]
                                 else:
-                                    show_status_message(
-                                        stdscr, f"Theme '{selected_theme}' updated!",
-                                    )
+                                    current_local = local_themes
+
+                                show_status_message(
+                                    stdscr, f"Theme saved as '{new_name}'!",
+                                )
                             else:
                                 show_status_message(
-                                    stdscr, f"Error: {result_path_or_error}",
+                                    stdscr, f"Theme '{selected_theme}' updated!",
                                 )
                         else:
-                            show_status_message(stdscr, "Customization cancelled")
+                            show_status_message(
+                                stdscr, f"Error: {result_path_or_error}",
+                            )
                     else:
-                        show_status_message(stdscr, "Color editing cancelled")
+                        show_status_message(stdscr, "Customization cancelled")
+                else:
+                    show_status_message(stdscr, "Color editing cancelled")
 
 
-def main():
+def main() -> None:
     """Main entry point for the oh-my-theme application."""
     shell, config_file = get_shell_info()
     if not shell:

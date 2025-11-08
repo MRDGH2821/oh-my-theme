@@ -3,6 +3,7 @@
 This module provides functionality to add custom Git repositories,
 fetch .omp.json theme files, and install them locally.
 """
+from __future__ import annotations
 
 import curses
 import json
@@ -114,7 +115,7 @@ def validate_repository_url(repo_url):
     return True, ""
 
 
-def get_github_api_url(repo_url):
+def get_github_api_url(repo_url) -> str | None:
     """Convert a GitHub repository URL to its API URL for contents.
 
     Args:
@@ -145,7 +146,7 @@ def get_github_api_url(repo_url):
         return None
 
 
-def get_raw_file_url(repo_url, filename):
+def get_raw_file_url(repo_url, filename) -> str | None:
     """Get the raw file URL for a specific file in the repository.
 
     Args:

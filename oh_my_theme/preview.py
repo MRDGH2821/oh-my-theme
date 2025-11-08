@@ -1,6 +1,7 @@
 """Simple theme preview module for Oh My Theme.
 Shows basic metadata and prompt structure.
 """
+from __future__ import annotations
 
 import json
 import os
@@ -92,7 +93,7 @@ def show_enhanced_preview(stdscr, theme_name, is_local=True):
     return True
 
 
-def _show_preview_dialog(stdscr, theme_name, metadata, theme_path):
+def _show_preview_dialog(stdscr, theme_name, metadata, theme_path) -> None:
     """Show the preview dialog."""
     import curses
 
@@ -220,7 +221,7 @@ def _get_sample_prompt(theme_path):
         return "john ~/projects/my-app git(main) 15:04\n❯ "
 
 
-def _download_theme(theme_name):
+def _download_theme(theme_name) -> bool | None:
     """Download theme file."""
     from urllib import request
 
@@ -238,7 +239,7 @@ def _download_theme(theme_name):
         return False
 
 
-def _ask_keep_theme(stdscr, theme_name):
+def _ask_keep_theme(stdscr, theme_name) -> bool | None:
     """Ask user if they want to keep downloaded theme."""
     import curses
 
@@ -259,7 +260,7 @@ def _ask_keep_theme(stdscr, theme_name):
             return False
 
 
-def _show_error(stdscr, message):
+def _show_error(stdscr, message) -> None:
     """Show error message."""
     import curses
 

@@ -4,14 +4,15 @@ This module provides functionality to customize theme colors through a simple
 curses-based interface, allowing users to modify segment colors and save
 changes as new themes or overwrite existing ones.
 """
+from __future__ import annotations
 
 import curses
 import json
 import os
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 
-def show_color_editor(stdscr, theme_path: str) -> Optional[Dict[str, Any]]:
+def show_color_editor(stdscr, theme_path: str) -> dict[str, Any] | None:
     """Display color editing interface for theme customization.
 
     Args:
@@ -46,12 +47,11 @@ def show_color_editor(stdscr, theme_path: str) -> Optional[Dict[str, Any]]:
         return None  # User cancelled
 
     # Apply changes to theme data
-    modified_theme_data = _apply_color_changes(theme_data, modified_colors)
-
-    return modified_theme_data
+    return _apply_color_changes(theme_data, modified_colors)
 
 
-def extract_segment_colors(theme_data: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
+
+def extract_segment_colors(theme_data: dict[str, Any]) -> dict[str, dict[str, str]]:
     """Parse theme JSON to extract segment color information.
 
     Args:
@@ -92,8 +92,8 @@ def extract_segment_colors(theme_data: Dict[str, Any]) -> Dict[str, Dict[str, st
 
 
 def save_theme_changes(
-    theme_data: Dict[str, Any], original_path: str, new_name: Optional[str] = None,
-) -> Tuple[bool, str]:
+    theme_data: dict[str, Any], original_path: str, new_name: str | None = None,
+) -> tuple[bool, str]:
     """Save modified theme as new file or overwrite original.
 
     Args:
@@ -131,8 +131,8 @@ def save_theme_changes(
 
 
 def _show_color_selection_interface(
-    stdscr, segment_colors: Dict[str, Dict[str, Any]],
-) -> Optional[Dict[str, Dict[str, str]]]:
+    stdscr, segment_colors: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, str]] | None:
     """Display the color selection interface.
 
     Args:
@@ -282,7 +282,7 @@ def _show_color_selection_interface(
 
 def _show_color_input_dialog(
     stdscr, segment_type: str, color_type: str, current_value: str,
-) -> Optional[str]:
+) -> str | None:
     """Show dialog for color input.
 
     Args:
@@ -345,7 +345,7 @@ def _show_color_input_dialog(
         if key == curses.KEY_ENTER or key in [10, 13]:  # ENTER - save
             curses.curs_set(0)
             return input_text.strip() if input_text.strip() else None
-        if key == curses.KEY_BACKSPACE or key == 127:
+        if key in (curses.KEY_BACKSPACE, 127):
             if cursor_pos > 0:
                 input_text = input_text[: cursor_pos - 1] + input_text[cursor_pos:]
                 cursor_pos -= 1
@@ -364,8 +364,8 @@ def _show_color_input_dialog(
 
 
 def _apply_color_changes(
-    theme_data: Dict[str, Any], modified_colors: Dict[str, Dict[str, str]],
-) -> Dict[str, Any]:
+    theme_data: dict[str, Any], modified_colors: dict[str, dict[str, str]],
+) -> dict[str, Any]:
     """Apply color changes to theme data.
 
     Args:
@@ -404,7 +404,7 @@ def _apply_color_changes(
     return new_theme_data
 
 
-def _show_error_dialog(stdscr, message: str):
+def _show_error_dialog(stdscr, message: str) -> None:
     """Show an error dialog.
 
     Args:
@@ -430,7 +430,7 @@ def _show_error_dialog(stdscr, message: str):
     dialog.getch()
 
 
-def _show_save_options_dialog(stdscr, theme_name: str) -> Tuple[Optional[str], bool]:
+def _show_save_options_dialog(stdscr, theme_name: str) -> tuple[str | None, bool]:
     """Show dialog for save options.
 
     Args:
@@ -471,7 +471,7 @@ def _show_save_options_dialog(stdscr, theme_name: str) -> Tuple[Optional[str], b
             return None, False  # Cancel
 
 
-def _show_name_input_dialog(stdscr, default_name: str) -> Optional[str]:
+def _show_name_input_dialog(stdscr, default_name: str) -> str | None:
     """Show dialog for entering new theme name.
 
     Args:
@@ -529,7 +529,7 @@ def _show_name_input_dialog(stdscr, default_name: str) -> Optional[str]:
             if result and all(c.isalnum() or c in "-_" for c in result):
                 return result
             continue  # Invalid name, stay in dialog
-        if key == curses.KEY_BACKSPACE or key == 127:
+        if key in (curses.KEY_BACKSPACE, 127):
             if cursor_pos > 0:
                 input_text = input_text[: cursor_pos - 1] + input_text[cursor_pos:]
                 cursor_pos -= 1
@@ -552,7 +552,7 @@ _color_pair_cache = {}
 _next_color_pair = 10  # Start after basic pairs
 
 
-def _init_color_support():
+def _init_color_support() -> None:
     """Initialize color support for the terminal."""
     global _color_pair_cache, _next_color_pair
     _color_pair_cache = {}
@@ -584,7 +584,7 @@ def _detect_color_support() -> str:
     return "basic"
 
 
-def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
+def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """Convert hex color to RGB values.
 
     Args:
@@ -639,7 +639,7 @@ def _get_closest_256_color(hex_color: str) -> int:
     return 16 + (36 * r_idx) + (6 * g_idx) + b_idx
 
 
-def _get_color_pair(hex_color: str, color_support: str) -> Optional[int]:
+def _get_color_pair(hex_color: str, color_support: str) -> int | None:
     """Get or create a color pair for the given hex color.
 
     Args:
@@ -719,7 +719,7 @@ def _create_color_display_text(
 
 def _render_color_line(
     stdscr, y: int, x: int, text: str, hex_color: str, color_support: str,
-):
+) -> None:
     """Render a line with color preview.
 
     Args:

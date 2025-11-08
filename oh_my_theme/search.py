@@ -216,7 +216,7 @@ def draw_panel_with_search(
     selected_items=None,
     active_theme=None,
     search_query=None,
-):
+) -> None:
     """Enhanced panel drawing with search highlighting.
 
     Args:

@@ -1,4 +1,4 @@
-"""Oh My Theme - A terminal-based theme manager for Oh My Posh
+"""Oh My Theme - A terminal-based theme manager for Oh My Posh.
 
 A user-friendly tool for browsing, previewing, installing, and activating
 Oh My Posh themes with an intuitive curses-based interface.
