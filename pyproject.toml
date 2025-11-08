@@ -47,7 +47,7 @@ classifiers = [
     "Topic :: Terminals",
     "Topic :: Utilities",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.7"
 dependencies = ["windows-curses>=2.4.1; platform_system == 'Windows'"]
 
 [project.urls]
