@@ -1,10 +1,9 @@
-"""
-Simple theme preview module for Oh My Theme.
+"""Simple theme preview module for Oh My Theme.
 Shows basic metadata and prompt structure.
 """
 
-import os
 import json
+import os
 
 
 def extract_theme_metadata(theme_path):
@@ -12,12 +11,13 @@ def extract_theme_metadata(theme_path):
 
     Returns:
         dict: {'name', 'version', 'source', 'colors'}
+
     """
     if not os.path.exists(theme_path):
         return None
 
     try:
-        with open(theme_path, "r", encoding="utf-8") as f:
+        with open(theme_path, encoding="utf-8") as f:
             theme_data = json.load(f)
 
         name = os.path.basename(theme_path).replace(".omp.json", "")
@@ -63,7 +63,6 @@ def extract_theme_metadata(theme_path):
 
 def show_enhanced_preview(stdscr, theme_name, is_local=True):
     """Show simple preview dialog."""
-
     themes_dir = os.path.expanduser("~/.poshthemes")
     theme_path = os.path.join(themes_dir, f"{theme_name}.omp.json")
 
@@ -138,7 +137,7 @@ def _show_preview_dialog(stdscr, theme_name, metadata, theme_path):
 def _get_sample_prompt(theme_path):
     """Get realistic sample prompt from theme structure."""
     try:
-        with open(theme_path, "r") as f:
+        with open(theme_path) as f:
             theme_data = json.load(f)
 
         # Build sample from actual theme structure
@@ -256,7 +255,7 @@ def _ask_keep_theme(stdscr, theme_name):
         key = dialog.getch()
         if key in [ord("y"), ord("Y")]:
             return True
-        elif key in [ord("n"), ord("N")]:
+        if key in [ord("n"), ord("N")]:
             return False
 
 
@@ -266,7 +265,7 @@ def _show_error(stdscr, message):
 
     h, w = stdscr.getmaxyx()
     dialog = curses.newwin(
-        5, len(message) + 10, h // 2 - 2, w // 2 - len(message) // 2 - 5
+        5, len(message) + 10, h // 2 - 2, w // 2 - len(message) // 2 - 5,
     )
     dialog.box()
     dialog.addstr(1, 2, "Error:")

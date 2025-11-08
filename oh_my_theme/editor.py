@@ -1,15 +1,14 @@
-"""
-Theme color editing module for Oh My Theme.
+"""Theme color editing module for Oh My Theme.
 
 This module provides functionality to customize theme colors through a simple
 curses-based interface, allowing users to modify segment colors and save
 changes as new themes or overwrite existing ones.
 """
 
-import os
-import json
 import curses
-from typing import Dict, Optional, Tuple, Any
+import json
+import os
+from typing import Any, Dict, Optional, Tuple
 
 
 def show_color_editor(stdscr, theme_path: str) -> Optional[Dict[str, Any]]:
@@ -21,15 +20,16 @@ def show_color_editor(stdscr, theme_path: str) -> Optional[Dict[str, Any]]:
 
     Returns:
         Modified theme data or None if cancelled
+
     """
     # Initialize color support
     _init_color_support()
 
     try:
-        with open(theme_path, "r", encoding="utf-8") as f:
+        with open(theme_path, encoding="utf-8") as f:
             theme_data = json.load(f)
-    except (json.JSONDecodeError, IOError) as e:
-        _show_error_dialog(stdscr, f"Error loading theme: {str(e)}")
+    except (OSError, json.JSONDecodeError) as e:
+        _show_error_dialog(stdscr, f"Error loading theme: {e!s}")
         return None
 
     # Extract segment colors for editing
@@ -59,6 +59,7 @@ def extract_segment_colors(theme_data: Dict[str, Any]) -> Dict[str, Dict[str, st
 
     Returns:
         Dictionary mapping segment types to their color properties
+
     """
     segment_colors = {}
 
@@ -91,7 +92,7 @@ def extract_segment_colors(theme_data: Dict[str, Any]) -> Dict[str, Dict[str, st
 
 
 def save_theme_changes(
-    theme_data: Dict[str, Any], original_path: str, new_name: Optional[str] = None
+    theme_data: Dict[str, Any], original_path: str, new_name: Optional[str] = None,
 ) -> Tuple[bool, str]:
     """Save modified theme as new file or overwrite original.
 
@@ -102,6 +103,7 @@ def save_theme_changes(
 
     Returns:
         Tuple of (success_status, file_path_or_error_message)
+
     """
     try:
         if new_name:
@@ -118,19 +120,18 @@ def save_theme_changes(
                 json.dump(theme_data, f, indent=2)
 
             return True, new_path
-        else:
-            # Overwrite original
-            with open(original_path, "w", encoding="utf-8") as f:
-                json.dump(theme_data, f, indent=2)
+        # Overwrite original
+        with open(original_path, "w", encoding="utf-8") as f:
+            json.dump(theme_data, f, indent=2)
 
-            return True, original_path
+        return True, original_path
 
-    except (IOError, OSError) as e:
-        return False, f"Error saving theme: {str(e)}"
+    except OSError as e:
+        return False, f"Error saving theme: {e!s}"
 
 
 def _show_color_selection_interface(
-    stdscr, segment_colors: Dict[str, Dict[str, Any]]
+    stdscr, segment_colors: Dict[str, Dict[str, Any]],
 ) -> Optional[Dict[str, Dict[str, str]]]:
     """Display the color selection interface.
 
@@ -140,6 +141,7 @@ def _show_color_selection_interface(
 
     Returns:
         Modified colors dictionary or None if cancelled
+
     """
     curses.curs_set(0)
 
@@ -157,7 +159,7 @@ def _show_color_selection_interface(
                     "color_type": color_type,
                     "color_value": color_value,
                     "display": f"{segment_type} - {color_type}: {color_value}",
-                }
+                },
             )
 
     if not color_items:
@@ -222,19 +224,19 @@ def _show_color_selection_interface(
 
                 # Create display text with color preview
                 display_text = _create_color_display_text(
-                    item["segment_type"], color_type, current_color, is_modified, w - 4
+                    item["segment_type"], color_type, current_color, is_modified, w - 4,
                 )
 
                 y_pos = list_start_y + i
                 if list_idx == selection:
                     stdscr.attron(curses.color_pair(3))
                     _render_color_line(
-                        stdscr, y_pos, 2, display_text, current_color, color_support
+                        stdscr, y_pos, 2, display_text, current_color, color_support,
                     )
                     stdscr.attroff(curses.color_pair(3))
                 else:
                     _render_color_line(
-                        stdscr, y_pos, 2, display_text, current_color, color_support
+                        stdscr, y_pos, 2, display_text, current_color, color_support,
                     )
 
         # Status line
@@ -247,9 +249,9 @@ def _show_color_selection_interface(
 
         if key == 27:  # ESC - cancel
             return None
-        elif key == ord("s") or key == ord("S"):  # Save
+        if key == ord("s") or key == ord("S"):  # Save
             return modified_colors
-        elif key == curses.KEY_UP:
+        if key == curses.KEY_UP:
             if selection > 0:
                 selection -= 1
         elif key == curses.KEY_DOWN:
@@ -270,7 +272,7 @@ def _show_color_selection_interface(
                 current_value = modified_colors[segment_id][color_type]
 
             new_color = _show_color_input_dialog(
-                stdscr, item["segment_type"], color_type, current_value
+                stdscr, item["segment_type"], color_type, current_value,
             )
             if new_color is not None:
                 if segment_id not in modified_colors:
@@ -279,7 +281,7 @@ def _show_color_selection_interface(
 
 
 def _show_color_input_dialog(
-    stdscr, segment_type: str, color_type: str, current_value: str
+    stdscr, segment_type: str, color_type: str, current_value: str,
 ) -> Optional[str]:
     """Show dialog for color input.
 
@@ -291,6 +293,7 @@ def _show_color_input_dialog(
 
     Returns:
         New color value or None if cancelled
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 8, min(60, w - 4)
@@ -339,10 +342,10 @@ def _show_color_input_dialog(
         if key == 27:  # ESC - cancel
             curses.curs_set(0)
             return None
-        elif key == curses.KEY_ENTER or key in [10, 13]:  # ENTER - save
+        if key == curses.KEY_ENTER or key in [10, 13]:  # ENTER - save
             curses.curs_set(0)
             return input_text.strip() if input_text.strip() else None
-        elif key == curses.KEY_BACKSPACE or key == 127:
+        if key == curses.KEY_BACKSPACE or key == 127:
             if cursor_pos > 0:
                 input_text = input_text[: cursor_pos - 1] + input_text[cursor_pos:]
                 cursor_pos -= 1
@@ -361,7 +364,7 @@ def _show_color_input_dialog(
 
 
 def _apply_color_changes(
-    theme_data: Dict[str, Any], modified_colors: Dict[str, Dict[str, str]]
+    theme_data: Dict[str, Any], modified_colors: Dict[str, Dict[str, str]],
 ) -> Dict[str, Any]:
     """Apply color changes to theme data.
 
@@ -371,6 +374,7 @@ def _apply_color_changes(
 
     Returns:
         Modified theme data
+
     """
     # Create a deep copy to avoid modifying original
     import copy
@@ -406,6 +410,7 @@ def _show_error_dialog(stdscr, message: str):
     Args:
         stdscr: The curses screen object
         message: Error message to display
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 5, min(len(message) + 10, w - 4)
@@ -434,6 +439,7 @@ def _show_save_options_dialog(stdscr, theme_name: str) -> Tuple[Optional[str], b
 
     Returns:
         Tuple of (new_theme_name_or_None, overwrite_original)
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 8, min(50, w - 4)
@@ -455,14 +461,13 @@ def _show_save_options_dialog(stdscr, theme_name: str) -> Tuple[Optional[str], b
         key = dialog.getch()
         if key in [ord("o"), ord("O")]:
             return None, True  # Overwrite original
-        elif key in [ord("n"), ord("N")]:
+        if key in [ord("n"), ord("N")]:
             # Get new theme name
             new_name = _show_name_input_dialog(stdscr, f"{theme_name}_custom")
             if new_name:
                 return new_name, False
-            else:
-                continue  # Back to save options if name input was cancelled
-        elif key in [ord("c"), ord("C")]:
+            continue  # Back to save options if name input was cancelled
+        if key in [ord("c"), ord("C")]:
             return None, False  # Cancel
 
 
@@ -475,6 +480,7 @@ def _show_name_input_dialog(stdscr, default_name: str) -> Optional[str]:
 
     Returns:
         New theme name or None if cancelled
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 6, min(50, w - 4)
@@ -516,15 +522,14 @@ def _show_name_input_dialog(stdscr, default_name: str) -> Optional[str]:
         if key == 27:  # ESC - cancel
             curses.curs_set(0)
             return None
-        elif key == curses.KEY_ENTER or key in [10, 13]:  # ENTER - save
+        if key == curses.KEY_ENTER or key in [10, 13]:  # ENTER - save
             curses.curs_set(0)
             result = input_text.strip()
             # Basic validation
             if result and all(c.isalnum() or c in "-_" for c in result):
                 return result
-            else:
-                continue  # Invalid name, stay in dialog
-        elif key == curses.KEY_BACKSPACE or key == 127:
+            continue  # Invalid name, stay in dialog
+        if key == curses.KEY_BACKSPACE or key == 127:
             if cursor_pos > 0:
                 input_text = input_text[: cursor_pos - 1] + input_text[cursor_pos:]
                 cursor_pos -= 1
@@ -568,15 +573,15 @@ def _detect_color_support() -> str:
 
     Returns:
         Color support level: 'truecolor', '256color', '16color', or 'basic'
+
     """
     if os.environ.get("COLORTERM") in ["truecolor", "24bit"]:
         return "truecolor"
-    elif curses.COLORS >= 256:
+    if curses.COLORS >= 256:
         return "256color"
-    elif curses.COLORS >= 16:
+    if curses.COLORS >= 16:
         return "16color"
-    else:
-        return "basic"
+    return "basic"
 
 
 def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
@@ -587,6 +592,7 @@ def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
 
     Returns:
         RGB tuple (r, g, b) with values 0-255
+
     """
     hex_color = hex_color.lstrip("#")
     if len(hex_color) != 6:
@@ -606,6 +612,7 @@ def _get_closest_256_color(hex_color: str) -> int:
 
     Returns:
         Color index in 256-color palette (0-255)
+
     """
     r, g, b = _hex_to_rgb(hex_color)
 
@@ -641,6 +648,7 @@ def _get_color_pair(hex_color: str, color_support: str) -> Optional[int]:
 
     Returns:
         Color pair number or None if not supported
+
     """
     global _color_pair_cache, _next_color_pair
 
@@ -657,7 +665,7 @@ def _get_color_pair(hex_color: str, color_support: str) -> Optional[int]:
         if color_support == "256color":
             color_index = _get_closest_256_color(hex_color)
             curses.init_pair(
-                _next_color_pair, color_index, -1
+                _next_color_pair, color_index, -1,
             )  # -1 for default background
         elif color_support == "truecolor":
             r, g, b = _hex_to_rgb(hex_color)
@@ -698,6 +706,7 @@ def _create_color_display_text(
 
     Returns:
         Formatted display text
+
     """
     modifier = " *" if is_modified else ""
     base_text = f"{segment_type} - {color_type}: {color_value}{modifier}"
@@ -709,7 +718,7 @@ def _create_color_display_text(
 
 
 def _render_color_line(
-    stdscr, y: int, x: int, text: str, hex_color: str, color_support: str
+    stdscr, y: int, x: int, text: str, hex_color: str, color_support: str,
 ):
     """Render a line with color preview.
 
@@ -720,6 +729,7 @@ def _render_color_line(
         text: Text to display
         hex_color: Hex color for preview
         color_support: Color support level
+
     """
     if color_support in ["basic", "16color"]:
         # Just display the text without color
@@ -734,7 +744,7 @@ def _render_color_line(
 
     # Split text into parts: before hex, hex color, after hex
     before_hex = text[:hex_start]
-    hex_end = hex_start + 7 if hex_start + 7 <= len(text) else len(text)
+    hex_end = min(hex_start + 7, len(text))
     hex_part = text[hex_start:hex_end]
     after_hex = text[hex_end:]
 

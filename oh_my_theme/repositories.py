@@ -1,13 +1,12 @@
-"""
-Custom repository management module for Oh My Theme.
+"""Custom repository management module for Oh My Theme.
 
 This module provides functionality to add custom Git repositories,
 fetch .omp.json theme files, and install them locally.
 """
 
-import os
-import json
 import curses
+import json
+import os
 from urllib import request
 from urllib.parse import urlparse
 
@@ -20,6 +19,7 @@ def show_repo_input_dialog(stdscr):
 
     Returns:
         str or None: Repository URL or None if cancelled
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 8, min(70, w - 4)
@@ -66,10 +66,10 @@ def show_repo_input_dialog(stdscr):
         if key == 27:  # ESC - cancel
             curses.curs_set(0)
             return None
-        elif key in [10, 13]:  # Enter - confirm
+        if key in [10, 13]:  # Enter - confirm
             curses.curs_set(0)
             return url.strip() if url.strip() else None
-        elif key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
+        if key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
             if url:
                 url = url[:-1]
         elif key >= 32 and key <= 126:  # Printable characters
@@ -85,6 +85,7 @@ def validate_repository_url(repo_url):
 
     Returns:
         tuple: (is_valid, error_message)
+
     """
     if not repo_url:
         return False, "URL cannot be empty"
@@ -121,6 +122,7 @@ def get_github_api_url(repo_url):
 
     Returns:
         str or None: API URL for repository contents, or None if not GitHub
+
     """
     try:
         parsed = urlparse(repo_url)
@@ -152,6 +154,7 @@ def get_raw_file_url(repo_url, filename):
 
     Returns:
         str or None: Raw file URL, or None if cannot be constructed
+
     """
     try:
         parsed = urlparse(repo_url)
@@ -191,6 +194,7 @@ def fetch_themes_from_repo(repo_url):
         tuple: (theme_files, error_message)
         theme_files: List of dicts with 'name' and 'download_url' keys
         error_message: Error message if failed, None if successful
+
     """
     # First validate the URL
     is_valid, error_msg = validate_repository_url(repo_url)
@@ -209,21 +213,19 @@ def fetch_themes_from_repo(repo_url):
 
                     for item in data:
                         if item.get("type") == "file" and item.get("name", "").endswith(
-                            ".omp.json"
+                            ".omp.json",
                         ):
                             theme_files.append(
                                 {
                                     "name": item["name"],
                                     "download_url": item["download_url"],
-                                }
+                                },
                             )
 
                     if theme_files:
                         return theme_files, None
-                    else:
-                        return [], "No .omp.json files found in repository root"
-                else:
-                    return [], f"Failed to access repository (HTTP {response.status})"
+                    return [], "No .omp.json files found in repository root"
+                return [], f"Failed to access repository (HTTP {response.status})"
 
         except Exception:
             # GitHub API failed, try alternative approach
@@ -249,15 +251,14 @@ def fetch_themes_from_repo(repo_url):
                         json.loads(content)  # This will raise if invalid JSON
 
                         theme_files.append(
-                            {"name": theme_name, "download_url": raw_url}
+                            {"name": theme_name, "download_url": raw_url},
                         )
             except Exception:
                 continue
 
     if theme_files:
         return theme_files, None
-    else:
-        return [], "Could not find any .omp.json files in repository"
+    return [], "Could not find any .omp.json files in repository"
 
 
 def install_custom_themes(theme_files, repo_url, themes_dir):
@@ -272,6 +273,7 @@ def install_custom_themes(theme_files, repo_url, themes_dir):
         tuple: (success_count, errors)
         success_count: Number of successfully installed themes
         errors: List of error messages for failed installations
+
     """
     if not os.path.exists(themes_dir):
         try:
@@ -314,7 +316,7 @@ def install_custom_themes(theme_files, repo_url, themes_dir):
         except json.JSONDecodeError:
             errors.append(f"{theme_name}: Invalid JSON format")
         except Exception as e:
-            errors.append(f"{theme_name}: {str(e)}")
+            errors.append(f"{theme_name}: {e!s}")
 
     return success_count, errors
 
@@ -330,6 +332,7 @@ def show_installation_progress(stdscr, theme_files, repo_url, themes_dir):
 
     Returns:
         tuple: (success_count, total_count, errors)
+
     """
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 10, min(60, w - 4)
@@ -387,6 +390,7 @@ def handle_add_repository(stdscr, themes_dir):
         tuple: (success, message)
         success: True if themes were successfully added
         message: Status message to display to user
+
     """
     # Get repository URL from user
     repo_url = show_repo_input_dialog(stdscr)
@@ -414,7 +418,7 @@ def handle_add_repository(stdscr, themes_dir):
         status_dialog.attroff(curses.color_pair(2))
         status_dialog.addstr(1, 2, "Failed to fetch themes:")
         status_dialog.addstr(
-            2, 2, error_msg[:45] + "..." if len(error_msg) > 45 else error_msg
+            2, 2, error_msg[:45] + "..." if len(error_msg) > 45 else error_msg,
         )
         status_dialog.addstr(3, 2, "Press any key to continue...")
         status_dialog.refresh()
@@ -458,12 +462,12 @@ def handle_add_repository(stdscr, themes_dir):
         key = status_dialog.getch()
         if key in [ord("y"), ord("Y")]:
             break
-        elif key in [ord("n"), ord("N")]:
+        if key in [ord("n"), ord("N")]:
             return False, "Installation cancelled"
 
     # Perform installation with progress
     success_count, total_count, errors = show_installation_progress(
-        stdscr, theme_files, repo_url, themes_dir
+        stdscr, theme_files, repo_url, themes_dir,
     )
 
     if success_count > 0:
@@ -476,8 +480,7 @@ def handle_add_repository(stdscr, themes_dir):
 
         add_custom_repository(repo_url)
         return True, f"Installed {success_count}/{total_count} custom themes"
-    else:
-        return (
-            False,
-            f"Failed to install themes: {errors[0] if errors else 'Unknown error'}",
-        )
+    return (
+        False,
+        f"Failed to install themes: {errors[0] if errors else 'Unknown error'}",
+    )

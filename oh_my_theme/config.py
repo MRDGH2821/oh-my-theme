@@ -1,11 +1,9 @@
-"""
-Configuration management for Oh My Theme.
+"""Configuration management for Oh My Theme.
 Handles storage and retrieval of custom repositories and settings.
 """
 
-import os
 import json
-
+import os
 
 CONFIG_DIR = os.path.expanduser("~/.config/oh-my-theme")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
@@ -22,6 +20,7 @@ def load_config():
 
     Returns:
         dict: Configuration data with default values
+
     """
     default_config = {
         "custom_repositories": [],
@@ -32,7 +31,7 @@ def load_config():
         return default_config
 
     try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        with open(CONFIG_FILE, encoding="utf-8") as f:
             config = json.load(f)
 
         # Merge with defaults to ensure all keys exist
@@ -41,7 +40,7 @@ def load_config():
                 config[key] = value
 
         return config
-    except (json.JSONDecodeError, IOError):
+    except (OSError, json.JSONDecodeError):
         return default_config
 
 
@@ -53,6 +52,7 @@ def save_config(config):
 
     Returns:
         bool: True if successful, False otherwise
+
     """
     ensure_config_dir()
 
@@ -60,7 +60,7 @@ def save_config(config):
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2)
         return True
-    except IOError:
+    except OSError:
         return False
 
 
@@ -72,6 +72,7 @@ def add_custom_repository(repo_url):
 
     Returns:
         bool: True if added successfully, False if already exists
+
     """
     config = load_config()
 
@@ -90,6 +91,7 @@ def remove_custom_repository(repo_url):
 
     Returns:
         bool: True if removed successfully, False if not found
+
     """
     config = load_config()
 
@@ -105,6 +107,7 @@ def get_custom_repositories():
 
     Returns:
         list: List of custom repository URLs
+
     """
     config = load_config()
     return config.get("custom_repositories", [])
@@ -119,6 +122,7 @@ def get_setting(key, default=None):
 
     Returns:
         Setting value or default
+
     """
     config = load_config()
     return config.get("settings", {}).get(key, default)
@@ -133,6 +137,7 @@ def set_setting(key, value):
 
     Returns:
         bool: True if successful, False otherwise
+
     """
     config = load_config()
     if "settings" not in config:

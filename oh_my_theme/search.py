@@ -1,5 +1,4 @@
-"""
-Search functionality module for Oh My Theme.
+"""Search functionality module for Oh My Theme.
 
 This module provides real-time search and filtering capabilities for both
 local and remote themes with highlighting and keyboard navigation.
@@ -16,6 +15,7 @@ def show_search_bar(stdscr):
 
     Returns:
         str or None: Search query string or None if cancelled
+
     """
     h, w = stdscr.getmaxyx()
 
@@ -54,10 +54,10 @@ def show_search_bar(stdscr):
         if key == 27:  # ESC - cancel search
             curses.curs_set(0)
             return None
-        elif key in [10, 13]:  # Enter - confirm search
+        if key in [10, 13]:  # Enter - confirm search
             curses.curs_set(0)
             return query
-        elif key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
+        if key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
             if query:
                 query = query[:-1]
                 cursor_pos = max(8, cursor_pos - 1)
@@ -76,6 +76,7 @@ def filter_themes(themes, query):
 
     Returns:
         list: Filtered list of theme names that match the query
+
     """
     if not query or not query.strip():
         return themes
@@ -99,6 +100,7 @@ def highlight_match(theme_name, query):
 
     Returns:
         list: List of tuples (text, is_highlighted) for rendering
+
     """
     if not query or not query.strip():
         return [(theme_name, False)]
@@ -144,6 +146,7 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
 
     Returns:
         dict: Search state with filtered themes and query, or None if cancelled
+
     """
     h, w = stdscr.getmaxyx()
 
@@ -177,7 +180,7 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
         filtered_local = filter_themes(local_themes, query)
         filtered_remote = filter_themes(remote_themes, query)
         search_win.addstr(
-            2, 2, f"Found: {len(filtered_local)} local, {len(filtered_remote)} remote"
+            2, 2, f"Found: {len(filtered_local)} local, {len(filtered_remote)} remote",
         )
 
         search_win.refresh()
@@ -187,7 +190,7 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
         if key == 27:  # ESC - cancel search
             curses.curs_set(0)
             return None
-        elif key in [10, 13]:  # Enter - apply search
+        if key in [10, 13]:  # Enter - apply search
             curses.curs_set(0)
             return {
                 "query": query,
@@ -195,7 +198,7 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
                 "filtered_remote": filtered_remote,
                 "active": True,
             }
-        elif key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
+        if key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
             if query:
                 query = query[:-1]
         elif key >= 32 and key <= 126:  # Printable characters
@@ -226,6 +229,7 @@ def draw_panel_with_search(
         selected_items (set): Set of selected items (for remote themes)
         active_theme (str): Currently active theme name
         search_query (str): Current search query for highlighting
+
     """
     win.clear()
     border_color = curses.color_pair(2) if is_active else curses.color_pair(1)
@@ -266,7 +270,7 @@ def draw_panel_with_search(
 
                 if list_idx == selection_idx:
                     win.attron(
-                        curses.color_pair(3) if is_active else curses.color_pair(1)
+                        curses.color_pair(3) if is_active else curses.color_pair(1),
                     )
 
                 # Draw prefix
@@ -298,7 +302,7 @@ def draw_panel_with_search(
 
                 if list_idx == selection_idx:
                     win.attroff(
-                        curses.color_pair(3) if is_active else curses.color_pair(1)
+                        curses.color_pair(3) if is_active else curses.color_pair(1),
                     )
             else:
                 # No search highlighting, use original logic
@@ -308,11 +312,11 @@ def draw_panel_with_search(
 
                 if list_idx == selection_idx:
                     win.attron(
-                        curses.color_pair(3) if is_active else curses.color_pair(1)
+                        curses.color_pair(3) if is_active else curses.color_pair(1),
                     )
                     win.addstr(i + 1, 2, display_name)
                     win.attroff(
-                        curses.color_pair(3) if is_active else curses.color_pair(1)
+                        curses.color_pair(3) if is_active else curses.color_pair(1),
                     )
                 else:
                     win.addstr(i + 1, 2, display_name)
