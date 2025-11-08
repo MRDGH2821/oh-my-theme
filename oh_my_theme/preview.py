@@ -1,4 +1,5 @@
 """Simple theme preview module for Oh My Theme.
+
 Shows basic metadata and prompt structure.
 """
 

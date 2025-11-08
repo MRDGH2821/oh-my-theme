@@ -1,4 +1,5 @@
 """Configuration management for Oh My Theme.
+
 Handles storage and retrieval of custom repositories and settings.
 """
 
