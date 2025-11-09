@@ -11,7 +11,7 @@ Theme manager for [Oh My Posh](https://ohmyposh.dev/) that lets you browse, prev
 - 💻 **Fast and simple**: runs from terminal. Simple interface.
 - 🔍 **Real-time Search**: Filter local and remote theme repo
 - ⚡ **Fast Installation**: Single or multiple theme download
-- 🔄 **Easy Theme Switching**: Theme activation (Bash/Zsh/Fish) 
+- 🔄 **Easy Theme Switching**: Theme activation (Bash/Zsh/Fish)
 - 🗂️ **Dual Panel Interface**: Local and remote theme management
 - 🎯 **Custom Repositories**: Add themes from Git repository (json has to be in root)
 - 🎨 **Theme Customization**: Built-in color editor
@@ -29,11 +29,13 @@ Before using this tool, you need:
 ## Installation
 
 ### Method 1: PyPI (Recommended)
+
 ```bash
 pip install oh-my-theme
 ```
 
 ### Method 2: AUR (Arch Linux)
+
 ```bash
 yay -S oh-my-theme
 # or
@@ -41,6 +43,7 @@ paru -S oh-my-theme
 ```
 
 ### Method 3: Git Clone
+
 ```bash
 git clone https://github.com/mikeisfree/oh-my-theme.git
 pip install -e .
@@ -49,6 +52,7 @@ pip install -e .
 ## Usage After Installation
 
 Once installed run with:
+
 ```bash
 omt
 ```
@@ -58,19 +62,17 @@ omt
 The tool automatically updates your shell configuration:
 
 - **Bash**: `~/.bashrc`
-- **Zsh**: `~/.zshrc` 
+- **Zsh**: `~/.zshrc`
 - **Fish**: `~/.config/fish/config.fish`
 
+### Clean Theme Management
 
-
-### Clean Theme Management:
-- **Removes** all existing Oh My Posh theme lines when activating a new theme - If You want to keep existing oh-my-posh configuration commenting it out will not be enough - back it up to a separate file! 
+- **Removes** all existing Oh My Posh theme lines when activating a new theme - If You want to keep existing oh-my-posh configuration commenting it out will not be enough - back it up to a separate file!
 - **Adds** only the new active theme command
 - **Preserves** all other shell configuration! (aliases, exports, functions)
 
-
-
 After activating a theme, reload your shell:
+
 ```bash
 source ~/.bashrc    # For Bash
 source ~/.zshrc     # For Zsh
@@ -83,29 +85,31 @@ source ~/.zshrc     # For Zsh
 ### Interface Overview
 
 The tool displays two panels:
+
 - **Left Panel**: installed themes (local)
 - **Right Panel**: Available themes from Oh My Posh main repository + custom repos added by user (remote)
 
 ### Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `TAB` | Switch between panels |
-| `↑/↓` | Navigate theme list |
+| Key     | Action                                                       |
+| ------- | ------------------------------------------------------------ |
+| `TAB`   | Switch between panels                                        |
+| `↑/↓`   | Navigate theme list                                          |
 | `ENTER` | Activate/Remove/Customize local theme or Select remote theme |
-| `SPACE` | Toggle selection for remote themes |
-| `p` | Preview selected theme |
-| `i` | Install selected remote themes |
-| `/` | **NEW**: Enter search mode for real-time theme filtering |
-| `+` | **NEW**: Add custom Git repository |
-| `ESC` | Exit search mode & cancel dialogs |
-| `q` | Quit application |
+| `SPACE` | Toggle selection for remote themes                           |
+| `p`     | Preview selected theme                                       |
+| `i`     | Install selected remote themes                               |
+| `/`     | **NEW**: Enter search mode for real-time theme filtering     |
+| `+`     | **NEW**: Add custom Git repository                           |
+| `ESC`   | Exit search mode & cancel dialogs                            |
+| `q`     | Quit application                                             |
 
 ### Local Theme Actions (ENTER)
 
 When you press ENTER on a local theme, you'll see these options:
+
 - `A` - **Activate** theme in shell
-- `R` - **Remove** theme  
+- `R` - **Remove** theme
 - `C` - **Customize** theme colors
 
 ### Getting Started
@@ -122,6 +126,7 @@ When you press ENTER on a local theme, you'll see these options:
 ### Theme Previews
 
 Preview feature shows:
+
 - **Sample prompt structure** git status, paths, segments
 - **Essential metadata**: Name, Version, Source (git repository), Color variation
 
@@ -132,7 +137,7 @@ Preview feature shows:
 - Press `/` to enter search mode
 - Type to filter themes in real-time across both local and remote panels
 - Search results highlight matching text
-- Press `ESC` to exit search and process filtered items 
+- Press `ESC` to exit search and process filtered items
 
 ### Custom Repository Support
 
@@ -140,7 +145,7 @@ Preview feature shows:
 - Enter the Git repository URL when prompted
 - The tool will fetch all `.omp.json` files from the repository root
 - Custom themes are downloaded to your local themes directory
-- repository address will be added to filter array 
+- repository address will be added to filter array
 
 ![Screenshot-custom](./img/ohmytheme-custom.png)
 
@@ -161,42 +166,54 @@ Downloaded themes are stored in `~/.poshthemes/` directory. The tool manages thi
 ## Troubleshooting
 
 ### "Unsupported shell" Error
+
 Make sure your `SHELL` environment variable is set correctly:
+
 ```bash
 echo $SHELL
 ```
 
-## Safety measures:
+## Safety measures
 
 ### Backup-friendly: Uses a clean replacement strategy that preserves non-Oh My Posh configurations
+
 ### Atomic updates: Reads entire file, modifies in memory, then writes back
+
 ### Error handling: Returns success/failure status
-### uses regex pattern to identify Oh My Posh lines:
+
+### uses regex pattern to identify Oh My Posh lines
+
 ```bash
 init_pattern = re.compile(r"^\s*(eval.*oh-my-posh init.*|oh-my-posh init.*fish.*)")
 ```
+
 ### User confirmation: Always asks for confirmation before activating themes
 
 ### Theme Not Activating
+
 1. Ensure Oh My Posh is properly installed and in your PATH
 2. Check that your shell configuration file exists and is writable
 3. Reload your shell after theme activation
 
 ### Preview Not Working
+
 - For remote themes: The tool will offer to download the theme for preview
 - For local themes: Ensure the theme file exists in `~/.poshthemes/`
 
 ### Search Not Responding
+
 - Make sure you're in search mode (press `/` first)
 - Press `ESC` to exit search mode if stuck
 - Search works across both local and remote theme panels
 
 ### Custom Repository Issues
+
 - Ensure the Git repository URL is valid and accessible
 - Repository must contain `.omp.json` files in the root directory
 - Check your internet connection for repository access
 
 ### Theme Customization Problems
+
 - Only local themes can be customized
 - Ensure you have write permissions to the themes directory
 - Invalid JSON themes cannot be edited safely
@@ -211,7 +228,7 @@ init_pattern = re.compile(r"^\s*(eval.*oh-my-posh init.*|oh-my-posh init.*fish.*
 ## What's New in v2.0
 
 - 🔍 **Search**: Filter themes instantly with `/` keybind
-- 🎯 **Custom Repositories**: Add themes from Git repository with `+` keybind  
+- 🎯 **Custom Repositories**: Add themes from Git repository with `+` keybind
 - 🎨 **Theme Customization**: Built-in color editor for personalizing themes
 - ✨ **Enhanced Previews**: sample prompts with essential metadata
 - 🏗️ **Modular Architecture**: Improved code organization and maintainability
@@ -255,4 +272,3 @@ Oh My Theme v2.0 features a modular architecture:
 ---
 
 **Note**: This tool modifies your shell configuration files. It's recommended to backup your configuration before first use.
-
