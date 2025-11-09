@@ -7,7 +7,7 @@ local and remote themes with highlighting and keyboard navigation.
 import curses
 
 
-def show_search_bar(stdscr):
+def show_search_bar(stdscr: curses.window) -> str | None:
     """Display search input bar at bottom of screen.
 
     Args:
@@ -67,7 +67,7 @@ def show_search_bar(stdscr):
                 cursor_pos += 1
 
 
-def filter_themes(themes, query):
+def filter_themes(themes: list[str], query: str) -> list[str]:
     """Filter theme list based on search query.
 
     Args:
@@ -83,15 +83,12 @@ def filter_themes(themes, query):
 
     query = query.strip().lower()
     filtered = []
-
-    for theme in themes:
-        if query in theme.lower():
-            filtered.append(theme)
+    filtered = [theme for theme in themes if query in theme.lower()]
 
     return filtered
 
 
-def highlight_match(theme_name, query):
+def highlight_match(theme_name: str, query: str) -> list[tuple[str, bool]]:
     """Create a highlighted version of theme name showing matches.
 
     Args:
@@ -136,7 +133,9 @@ def highlight_match(theme_name, query):
     return parts
 
 
-def handle_search_mode(stdscr, local_themes, remote_themes):
+def handle_search_mode(
+    stdscr: curses.window, local_themes: list[str], remote_themes: list[str]
+) -> dict | None:
     """Manage search mode interaction and real-time filtering.
 
     Args:
@@ -209,15 +208,15 @@ def handle_search_mode(stdscr, local_themes, remote_themes):
 
 
 def draw_panel_with_search(
-    win,
-    title,
-    items,
-    selection_idx,
-    scroll_top,
-    is_active,
-    selected_items=None,
-    active_theme=None,
-    search_query=None,
+    win: curses.window,
+    title: str,
+    items: list[str],
+    selection_idx: int,
+    scroll_top: int,
+    is_active: bool,
+    selected_items: set[str] | None = None,
+    active_theme: str | None = None,
+    search_query: str | None = None,
 ) -> None:
     """Enhanced panel drawing with search highlighting.
 

@@ -13,7 +13,7 @@ from urllib import request
 from urllib.parse import urlparse
 
 
-def show_repo_input_dialog(stdscr):
+def show_repo_input_dialog(stdscr: curses.window) -> str | None:
     """Display dialog for Git repository URL input.
 
     Args:
@@ -79,7 +79,7 @@ def show_repo_input_dialog(stdscr):
                 url += chr(key)
 
 
-def validate_repository_url(repo_url):
+def validate_repository_url(repo_url: str) -> tuple[bool, str]:
     """Validate that the provided URL is a valid Git repository URL.
 
     Args:
@@ -116,7 +116,7 @@ def validate_repository_url(repo_url):
     return True, ""
 
 
-def get_github_api_url(repo_url) -> str | None:
+def get_github_api_url(repo_url: str) -> str | None:
     """Convert a GitHub repository URL to its API URL for contents.
 
     Args:
@@ -147,7 +147,7 @@ def get_github_api_url(repo_url) -> str | None:
         return None
 
 
-def get_raw_file_url(repo_url, filename) -> str | None:
+def get_raw_file_url(repo_url: str, filename: str) -> str | None:
     """Get the raw file URL for a specific file in the repository.
 
     Args:
@@ -186,7 +186,7 @@ def get_raw_file_url(repo_url, filename) -> str | None:
         return None
 
 
-def fetch_themes_from_repo(repo_url):
+def fetch_themes_from_repo(repo_url: str) -> tuple[list[dict], str | None]:
     """Fetch all .omp.json files from repository root.
 
     Args:
@@ -263,7 +263,9 @@ def fetch_themes_from_repo(repo_url):
     return [], "Could not find any .omp.json files in repository"
 
 
-def install_custom_themes(theme_files, repo_url, themes_dir):
+def install_custom_themes(
+    theme_files: list[dict], repo_url: str, themes_dir: str
+) -> tuple[int, list[str]]:
     """Download and install themes from custom repository.
 
     Args:
@@ -323,7 +325,9 @@ def install_custom_themes(theme_files, repo_url, themes_dir):
     return success_count, errors
 
 
-def show_installation_progress(stdscr, theme_files, repo_url, themes_dir):
+def show_installation_progress(
+    stdscr: curses.window, theme_files: list[dict], repo_url: str, themes_dir: str
+) -> tuple[int, int, list[str]]:
     """Show installation progress dialog and perform the installation.
 
     Args:
@@ -381,7 +385,7 @@ def show_installation_progress(stdscr, theme_files, repo_url, themes_dir):
     return success_count, total_themes, errors
 
 
-def handle_add_repository(stdscr, themes_dir):
+def handle_add_repository(stdscr: curses.window, themes_dir: str) -> tuple[bool, str]:
     """Handle the complete workflow of adding a custom repository.
 
     Args:

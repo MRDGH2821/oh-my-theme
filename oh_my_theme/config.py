@@ -7,9 +7,15 @@ from __future__ import annotations
 
 import json
 import os
+from typing import TypedDict
 
 CONFIG_DIR = os.path.expanduser("~/.config/oh-my-theme")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
+
+
+class Config(TypedDict):
+    custom_repositories: list[str]
+    settings: dict[str, int]
 
 
 def ensure_config_dir() -> None:
@@ -18,14 +24,14 @@ def ensure_config_dir() -> None:
         os.makedirs(CONFIG_DIR)
 
 
-def load_config():
+def load_config() -> Config:
     """Load configuration from file.
 
     Returns:
         dict: Configuration data with default values
 
     """
-    default_config = {
+    default_config: Config = {
         "custom_repositories": [],
         "settings": {"cache_expiry": 300, "max_cache_size": 50},
     }
@@ -43,15 +49,16 @@ def load_config():
                 config[key] = value
 
         return config
+
     except (OSError, json.JSONDecodeError):
         return default_config
 
 
-def save_config(config) -> bool | None:
+def save_config(config: Config) -> bool | None:
     """Save configuration to file.
 
     Args:
-        config (dict): Configuration data to save
+        config (Config): Configuration data to save
 
     Returns:
         bool: True if successful, False otherwise
@@ -67,7 +74,7 @@ def save_config(config) -> bool | None:
         return False
 
 
-def add_custom_repository(repo_url):
+def add_custom_repository(repo_url: str) -> bool | None:
     """Add a custom repository to the configuration.
 
     Args:
@@ -86,7 +93,7 @@ def add_custom_repository(repo_url):
     return False  # Already exists
 
 
-def remove_custom_repository(repo_url):
+def remove_custom_repository(repo_url: str) -> bool | None:
     """Remove a custom repository from the configuration.
 
     Args:
@@ -105,7 +112,7 @@ def remove_custom_repository(repo_url):
     return False  # Not found
 
 
-def get_custom_repositories():
+def get_custom_repositories() -> list[str]:
     """Get list of custom repositories.
 
     Returns:
@@ -116,7 +123,7 @@ def get_custom_repositories():
     return config.get("custom_repositories", [])
 
 
-def get_setting(key, default=None):
+def get_setting(key: str, default: int | None = None) -> int | None:
     """Get a configuration setting.
 
     Args:
@@ -131,7 +138,7 @@ def get_setting(key, default=None):
     return config.get("settings", {}).get(key, default)
 
 
-def set_setting(key, value):
+def set_setting(key: str, value: int) -> bool | None:
     """Set a configuration setting.
 
     Args:

@@ -28,9 +28,9 @@ CACHE_EXPIRY_SECONDS = 300  # 5 minutes cache expiry for file modification check
 # --- Data Fetching ---
 
 
-def fetch_remote_themes():
+def fetch_remote_themes() -> list[str]:
     """Fetches the list of available themes from all repositories (official + custom)."""
-    all_themes = set()
+    all_themes: set[str] = set()
 
     # Fetch from official Oh My Posh repository
     try:
@@ -72,7 +72,7 @@ def fetch_remote_themes():
     return sorted(all_themes)
 
 
-def get_local_themes():
+def get_local_themes() -> list[str]:
     """Gets the list of themes already installed locally."""
     if not os.path.exists(THEMES_DIR):
         return []
@@ -85,7 +85,7 @@ def get_local_themes():
         return []
 
 
-def get_active_theme(config_file):
+def get_active_theme(config_file: str) -> str | None:
     """Detects the currently active theme from shell config file."""
     if not os.path.exists(config_file):
         return None
@@ -111,7 +111,7 @@ def get_active_theme(config_file):
         return None
 
 
-def remove_theme(theme_name) -> bool | None:
+def remove_theme(theme_name: str) -> bool | None:
     """Removes a theme file from local storage and clears it from cache."""
     theme_path = os.path.join(THEMES_DIR, f"{theme_name}.omp.json")
     try:
@@ -135,16 +135,16 @@ def remove_theme(theme_name) -> bool | None:
 class ThemeMetadataCache:
     """Simple in-memory cache for theme metadata with LRU eviction and file modification tracking."""
 
-    def __init__(self, max_size=MAX_CACHE_SIZE) -> None:
+    def __init__(self, max_size: int = MAX_CACHE_SIZE) -> None:
         self.max_size = max_size
         self.cache = OrderedDict()  # Maintains insertion order for LRU
         self.file_timestamps = {}  # Track file modification times
 
-    def _get_cache_key(self, theme_path):
+    def _get_cache_key(self, theme_path: str) -> str:
         """Generate cache key from theme path."""
         return os.path.abspath(theme_path)
 
-    def _is_file_modified(self, theme_path):
+    def _is_file_modified(self, theme_path: str) -> bool:
         """Check if file has been modified since last cache."""
         try:
             current_mtime = os.path.getmtime(theme_path)
@@ -154,7 +154,7 @@ class ThemeMetadataCache:
         except OSError:
             return True  # File doesn't exist or can't be accessed
 
-    def get(self, theme_path):
+    def get(self, theme_path: str) -> dict | None:
         """Get cached metadata if available and file hasn't been modified."""
         if not os.path.exists(theme_path):
             return None
@@ -178,7 +178,7 @@ class ThemeMetadataCache:
 
         return None
 
-    def put(self, theme_path, metadata) -> None:
+    def put(self, theme_path: str, metadata: dict) -> None:
         """Store metadata in cache with LRU eviction."""
         if not os.path.exists(theme_path):
             return
@@ -204,7 +204,7 @@ class ThemeMetadataCache:
         self.cache.clear()
         self.file_timestamps.clear()
 
-    def size(self):
+    def size(self) -> int:
         """Get current cache size."""
         return len(self.cache)
 
@@ -215,7 +215,7 @@ _theme_cache = ThemeMetadataCache()
 # --- Theme Metadata Parser ---
 
 
-def parse_theme_metadata(theme_path):
+def parse_theme_metadata(theme_path: str) -> dict | None:
     """Extract metadata from .omp.json file with caching support.
 
     Args:
@@ -308,12 +308,12 @@ def parse_theme_metadata(theme_path):
         return fallback_metadata
 
 
-def _generate_description_from_segments(segment_types) -> str:
+def _generate_description_from_segments(segment_types: list[str]) -> str:
     """Generate a description based on the segments present in the theme."""
     if not segment_types:
         return "Simple theme with basic prompt"
 
-    key_segments = []
+    key_segments: list[str] = []
     if "git" in segment_types:
         key_segments.append("Git integration")
     if "path" in segment_types:
@@ -334,7 +334,7 @@ def _generate_description_from_segments(segment_types) -> str:
     return f"Custom theme with {len(segment_types)} segments"
 
 
-def _determine_complexity(segment_count) -> str:
+def _determine_complexity(segment_count: int) -> str:
     """Determine theme complexity based on number of segments."""
     if segment_count <= 3:
         return "Simple"
@@ -345,7 +345,7 @@ def _determine_complexity(segment_count) -> str:
 
 # Enhanced preview functionality moved to preview.py module
 # This function is kept for backward compatibility but now uses the enhanced module
-def generate_preview_text(metadata):
+def generate_preview_text(metadata: dict) -> str:
     """Generate displayable preview text from theme metadata.
 
     This function is deprecated. Use preview.show_enhanced_preview() instead.
@@ -373,7 +373,7 @@ def generate_preview_text(metadata):
 # --- Shell Configuration Logic ---
 
 
-def get_shell_info():
+def get_shell_info() -> tuple[str, str | None]:
     """Detects the user's shell and returns the config file path."""
     shell_path = os.environ.get("SHELL", "")
     shell_name = os.path.basename(shell_path)
@@ -387,7 +387,7 @@ def get_shell_info():
     return shell_name, config_file
 
 
-def update_shell_config(theme_name, shell, config_file) -> bool | None:
+def update_shell_config(theme_name: str, shell: str, config_file: str) -> bool | None:
     """Removes all existing Oh My Posh theme lines and activates the selected theme."""
     print(f"Activating theme '{theme_name}' in {os.path.basename(config_file)}...")
     local_theme_path = os.path.join(THEMES_DIR, f"{theme_name}.omp.json")
@@ -432,7 +432,7 @@ def update_shell_config(theme_name, shell, config_file) -> bool | None:
         return False
 
 
-def download_theme(theme_name) -> bool:
+def download_theme(theme_name: str) -> bool:
     """Downloads a single theme file from official or custom repositories."""
     if not os.path.exists(THEMES_DIR):
         os.makedirs(THEMES_DIR)
@@ -487,7 +487,7 @@ def download_theme(theme_name) -> bool:
     return False
 
 
-def download_theme_for_preview(theme_name) -> bool:
+def download_theme_for_preview(theme_name: str) -> bool:
     """Downloads a theme file silently for preview purposes from any repository."""
     if not os.path.exists(THEMES_DIR):
         os.makedirs(THEMES_DIR)
@@ -539,7 +539,7 @@ def download_theme_for_preview(theme_name) -> bool:
     return False
 
 
-def get_theme_metadata_optimized(theme_name, is_local=False):
+def get_theme_metadata_optimized(theme_name: str, is_local: bool = False):
     """Get theme metadata with optimized file reuse and caching.
 
     Args:
@@ -573,7 +573,7 @@ def clear_theme_cache() -> None:
     _theme_cache.clear()
 
 
-def get_cache_stats():
+def get_cache_stats() -> dict:
     """Get cache statistics for debugging/monitoring.
 
     Returns:
@@ -591,14 +591,14 @@ def get_cache_stats():
 
 
 def draw_panel(
-    win,
-    title,
-    items,
-    selection_idx,
-    scroll_top,
-    is_active,
-    selected_items=None,
-    active_theme=None,
+    win: curses.window,
+    title: str,
+    items: list[str],
+    selection_idx: int,
+    scroll_top: int,
+    is_active: bool,
+    selected_items: list[str] | None = None,
+    active_theme: str | None = None,
 ) -> None:
     """Draws a single panel window."""
     win.clear()
@@ -639,7 +639,7 @@ def draw_panel(
     win.refresh()
 
 
-def show_confirmation(stdscr, message) -> bool | None:
+def show_confirmation(stdscr: curses.window, message: str) -> bool | None:
     """Shows a confirmation dialog and returns True for Y, False for N."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 5, min(len(message) + 10, w - 4)
@@ -663,7 +663,7 @@ def show_confirmation(stdscr, message) -> bool | None:
             return False
 
 
-def show_keep_theme_dialog(stdscr, theme_name) -> bool | None:
+def show_keep_theme_dialog(stdscr: curses.window, theme_name: str) -> bool | None:
     """Shows a dialog asking whether to keep the downloaded theme."""
     h, w = stdscr.getmaxyx()
     message = f"Keep downloaded theme '{theme_name}'?"
@@ -690,7 +690,12 @@ def show_keep_theme_dialog(stdscr, theme_name) -> bool | None:
             return False
 
 
-def show_theme_preview(stdscr, theme_name, metadata, downloaded_for_preview=False):
+def show_theme_preview(
+    stdscr: curses.window,
+    theme_name: str,
+    metadata: dict,
+    downloaded_for_preview: bool = False,
+) -> bool | None:
     """Shows a theme preview dialog with enhanced metadata and sample prompts.
 
     Args:
@@ -716,7 +721,7 @@ def show_theme_preview(stdscr, theme_name, metadata, downloaded_for_preview=Fals
     return show_enhanced_preview(stdscr, theme_name, is_local)
 
 
-def show_status_message(stdscr, message, duration=2) -> None:
+def show_status_message(stdscr: curses.window, message: str, duration: int = 2) -> None:
     """Shows a temporary status message."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 3, min(len(message) + 4, w - 4)
@@ -734,7 +739,7 @@ def show_status_message(stdscr, message, duration=2) -> None:
     curses.napms(duration * 1000)  # Sleep for duration seconds
 
 
-def wrap_status_line(status_text, width, max_lines=2):
+def wrap_status_line(status_text: str, width: int, max_lines: int = 2) -> list[str]:
     """Wraps status line text to fit within terminal width across multiple lines.
 
     Args:
@@ -792,7 +797,7 @@ def wrap_status_line(status_text, width, max_lines=2):
     return lines
 
 
-def show_action_choice(stdscr, theme_name) -> str | None:
+def show_action_choice(stdscr: curses.window, theme_name: str) -> str | None:
     """Shows a dialog to choose between Activate, Remove, or Customize for local themes."""
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 8, min(50, w - 4)
@@ -823,7 +828,7 @@ def show_action_choice(stdscr, theme_name) -> str | None:
             return "cancel"
 
 
-def main_ui(stdscr) -> None:
+def main_ui(stdscr: curses.window) -> None:
     """The main application UI logic, wrapped by curses."""
     curses.curs_set(0)
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)  # Default
@@ -833,7 +838,7 @@ def main_ui(stdscr) -> None:
     # Initial data fetch
     local_themes = get_local_themes()
     remote_themes = fetch_remote_themes()
-    selected_for_install = set()  # Themes selected for installation
+    selected_for_install: set[str] = set()  # Themes selected for installation
 
     # Search state
     search_state = {
@@ -855,7 +860,7 @@ def main_ui(stdscr) -> None:
     # Initialize panel variables
     local_panel = None
     remote_panel = None
-    panel_wins = []
+    panel_wins: list[curses.window] = []
     last_status_height = 0
 
     while True:

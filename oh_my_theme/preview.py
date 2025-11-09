@@ -5,11 +5,13 @@ Shows basic metadata and prompt structure.
 
 from __future__ import annotations
 
+import curses
 import json
 import os
+from urllib import request
 
 
-def extract_theme_metadata(theme_path):
+def extract_theme_metadata(theme_path: str) -> dict | None:
     """Extract Name, Version, Source, Colors from theme file.
 
     Returns:
@@ -64,7 +66,9 @@ def extract_theme_metadata(theme_path):
         }
 
 
-def show_enhanced_preview(stdscr, theme_name, is_local=True):
+def show_enhanced_preview(
+    stdscr: curses.window, theme_name: str, is_local: bool = True
+) -> bool | None:
     """Show simple preview dialog."""
     themes_dir = os.path.expanduser("~/.poshthemes")
     theme_path = os.path.join(themes_dir, f"{theme_name}.omp.json")
@@ -95,10 +99,10 @@ def show_enhanced_preview(stdscr, theme_name, is_local=True):
     return True
 
 
-def _show_preview_dialog(stdscr, theme_name, metadata, theme_path) -> None:
+def _show_preview_dialog(
+    stdscr: curses.window, theme_name: str, metadata: dict, theme_path: str
+) -> None:
     """Show the preview dialog."""
-    import curses
-
     h, w = stdscr.getmaxyx()
     dialog_h, dialog_w = 15, min(60, w - 4)
     dialog_y = h // 2 - dialog_h // 2
@@ -137,7 +141,7 @@ def _show_preview_dialog(stdscr, theme_name, metadata, theme_path) -> None:
         pass
 
 
-def _get_sample_prompt(theme_path):
+def _get_sample_prompt(theme_path: str) -> str:
     """Get realistic sample prompt from theme structure."""
     try:
         with open(theme_path) as f:
@@ -223,10 +227,8 @@ def _get_sample_prompt(theme_path):
         return "john ~/projects/my-app git(main) 15:04\n❯ "
 
 
-def _download_theme(theme_name) -> bool | None:
+def _download_theme(theme_name: str) -> bool | None:
     """Download theme file."""
-    from urllib import request
-
     themes_dir = os.path.expanduser("~/.poshthemes")
     if not os.path.exists(themes_dir):
         os.makedirs(themes_dir)
@@ -241,10 +243,8 @@ def _download_theme(theme_name) -> bool | None:
         return False
 
 
-def _ask_keep_theme(stdscr, theme_name) -> bool | None:
+def _ask_keep_theme(stdscr: curses.window, theme_name: str) -> bool | None:
     """Ask user if they want to keep downloaded theme."""
-    import curses
-
     h, w = stdscr.getmaxyx()
     dialog = curses.newwin(6, 50, h // 2 - 3, w // 2 - 25)
     dialog.box()
@@ -262,10 +262,8 @@ def _ask_keep_theme(stdscr, theme_name) -> bool | None:
             return False
 
 
-def _show_error(stdscr, message) -> None:
+def _show_error(stdscr: curses.window, message: str) -> None:
     """Show error message."""
-    import curses
-
     h, w = stdscr.getmaxyx()
     dialog = curses.newwin(
         5,

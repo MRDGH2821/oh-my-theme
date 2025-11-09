@@ -7,13 +7,14 @@ changes as new themes or overwrite existing ones.
 
 from __future__ import annotations
 
+import copy
 import curses
 import json
 import os
 from typing import Any
 
 
-def show_color_editor(stdscr, theme_path: str) -> dict[str, Any] | None:
+def show_color_editor(stdscr: curses.window, theme_path: str) -> dict[str, Any] | None:
     """Display color editing interface for theme customization.
 
     Args:
@@ -133,7 +134,7 @@ def save_theme_changes(
 
 
 def _show_color_selection_interface(
-    stdscr,
+    stdscr: curses.window,
     segment_colors: dict[str, dict[str, Any]],
 ) -> dict[str, dict[str, str]] | None:
     """Display the color selection interface.
@@ -170,7 +171,7 @@ def _show_color_selection_interface(
 
     selection = 0
     scroll_top = 0
-    modified_colors = {}
+    modified_colors: dict[str, dict[str, str]] = {}
 
     h, w = stdscr.getmaxyx()
     color_support = _detect_color_support()
@@ -301,7 +302,7 @@ def _show_color_selection_interface(
 
 
 def _show_color_input_dialog(
-    stdscr,
+    stdscr: curses.window,
     segment_type: str,
     color_type: str,
     current_value: str,
@@ -401,7 +402,6 @@ def _apply_color_changes(
 
     """
     # Create a deep copy to avoid modifying original
-    import copy
 
     new_theme_data = copy.deepcopy(theme_data)
 
@@ -428,7 +428,7 @@ def _apply_color_changes(
     return new_theme_data
 
 
-def _show_error_dialog(stdscr, message: str) -> None:
+def _show_error_dialog(stdscr: curses.window, message: str) -> None:
     """Show an error dialog.
 
     Args:
@@ -454,7 +454,9 @@ def _show_error_dialog(stdscr, message: str) -> None:
     dialog.getch()
 
 
-def _show_save_options_dialog(stdscr, theme_name: str) -> tuple[str | None, bool]:
+def _show_save_options_dialog(
+    stdscr: curses.window, theme_name: str
+) -> tuple[str | None, bool]:
     """Show dialog for save options.
 
     Args:
@@ -495,7 +497,7 @@ def _show_save_options_dialog(stdscr, theme_name: str) -> tuple[str | None, bool
             return None, False  # Cancel
 
 
-def _show_name_input_dialog(stdscr, default_name: str) -> str | None:
+def _show_name_input_dialog(stdscr: curses.window, default_name: str) -> str | None:
     """Show dialog for entering new theme name.
 
     Args:
@@ -572,7 +574,7 @@ def _show_name_input_dialog(stdscr, default_name: str) -> str | None:
 
 
 # Color support functions
-_color_pair_cache = {}
+_color_pair_cache: dict[str, int] = {}
 _next_color_pair = 10  # Start after basic pairs
 
 
@@ -744,7 +746,7 @@ def _create_color_display_text(
 
 
 def _render_color_line(
-    stdscr,
+    stdscr: curses.window,
     y: int,
     x: int,
     text: str,
