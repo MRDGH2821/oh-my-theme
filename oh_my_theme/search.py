@@ -3,6 +3,7 @@
 This module provides real-time search and filtering capabilities for both
 local and remote themes with highlighting and keyboard navigation.
 """
+from __future__ import annotations
 
 import curses
 
@@ -82,10 +83,8 @@ def filter_themes(themes: list[str], query: str) -> list[str]:
         return themes
 
     query = query.strip().lower()
-    filtered = []
-    filtered = [theme for theme in themes if query in theme.lower()]
+    return [theme for theme in themes if query in theme.lower()]
 
-    return filtered
 
 
 def highlight_match(theme_name: str, query: str) -> list[tuple[str, bool]]:
