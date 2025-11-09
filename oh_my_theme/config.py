@@ -41,12 +41,15 @@ def load_config() -> Config:
 
     try:
         with open(CONFIG_FILE, encoding="utf-8") as f:
-            config = json.load(f)
+            loaded_data: dict = json.load(f)
 
         # Merge with defaults to ensure all keys exist
-        for key, value in default_config.items():
-            if key not in config:
-                config[key] = value
+        config: Config = {
+            "custom_repositories": loaded_data.get(
+                "custom_repositories", default_config["custom_repositories"]
+            ),
+            "settings": loaded_data.get("settings", default_config["settings"]),
+        }
 
         return config
 
