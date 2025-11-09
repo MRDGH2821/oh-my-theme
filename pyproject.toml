@@ -62,13 +62,14 @@ urls.Documentation = "https://github.com/mikeisfree/oh-my-theme#readme"
 urls.Homepage = "https://github.com/mikeisfree/oh-my-theme"
 urls.Issues = "https://github.com/mikeisfree/oh-my-theme/issues"
 urls.Repository = "https://github.com/mikeisfree/oh-my-theme"
-scripts.omt = "oh_my_theme.main:main"
+scripts.omt = "omt.main:main"
 
 [tool.setuptools]
-packages = ["oh_my_theme"]
+packages = ["omt"]
+package-dir = { "" = "src" }
 
 [tool.setuptools.package-data]
-oh_my_theme = ["*.py"]
+omt = ["*.py"]
 
 [tool.black]
 line-length = 88
