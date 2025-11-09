@@ -126,8 +126,12 @@ class ThemeMetadataCache:
 
     def __init__(self, max_size: int = MAX_CACHE_SIZE) -> None:
         self.max_size = max_size
-        self.cache = OrderedDict()  # Maintains insertion order for LRU
-        self.file_timestamps = {}  # Track file modification times
+        self.cache: OrderedDict[str, dict] = (
+            OrderedDict()
+        )  # Maintains insertion order for LRU
+        self.file_timestamps: dict[
+            str, int | float
+        ] = {}  # Track file modification times
 
     def _get_cache_key(self, theme_path: str) -> str:
         """Generate cache key from theme path."""
@@ -139,9 +143,10 @@ class ThemeMetadataCache:
             current_mtime = os.path.getmtime(theme_path)
             cache_key = self._get_cache_key(theme_path)
             cached_mtime = self.file_timestamps.get(cache_key)
-            return cached_mtime is None or current_mtime > cached_mtime
         except OSError:
             return True  # File doesn't exist or can't be accessed
+        else:
+            return cached_mtime is None or current_mtime > cached_mtime
 
     def get(self, theme_path: str) -> dict | None:
         """Get cached metadata if available and file hasn't been modified."""
@@ -297,7 +302,7 @@ def parse_theme_metadata(theme_path: str) -> dict | None:
         return fallback_metadata
 
 
-def _generate_description_from_segments(segment_types: list[str]) -> str:
+def _generate_description_from_segments(segment_types: set[str]) -> str:
     """Generate a description based on the segments present in the theme."""
     if not segment_types:
         return "Simple theme with basic prompt"
@@ -518,7 +523,9 @@ def download_theme_for_preview(theme_name: str) -> bool:
     return False
 
 
-def get_theme_metadata_optimized(theme_name: str, is_local: bool = False):
+def get_theme_metadata_optimized(
+    theme_name: str, is_local: bool = False
+) -> tuple[dict | None, bool]:
     """Get theme metadata with optimized file reuse and caching.
 
     Args:
