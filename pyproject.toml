@@ -64,6 +64,9 @@ urls.Issues = "https://github.com/mikeisfree/oh-my-theme/issues"
 urls.Repository = "https://github.com/mikeisfree/oh-my-theme"
 scripts.omt = "omt.main:main"
 
+[dependency-groups]
+dev = ["mypy>=1.4.1", "pytest>=7.4.4", "pytest-cov>=4.1", "ruff>=0.14.4"]
+
 [tool.setuptools]
 packages = ["omt"]
 package-dir = { "" = "src" }
