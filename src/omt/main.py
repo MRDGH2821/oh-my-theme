@@ -374,11 +374,13 @@ def get_shell_info() -> tuple[str, str | None]:
 
 def update_shell_config(theme_name: str, shell: str, config_file: str) -> bool | None:
     """Removes all existing Oh My Posh theme lines and activates the selected theme."""
-    print(f"Activating theme '{theme_name}' in {os.path.basename(config_file)}...")
+    sys.stdout.write(
+        f"Activating theme '{theme_name}' in {os.path.basename(config_file)}...\n"
+    )
     local_theme_path = os.path.join(THEMES_DIR, f"{theme_name}.omp.json")
 
     if not os.path.exists(local_theme_path):
-        print(f"Theme file not found: {local_theme_path}")
+        sys.stderr.write(f"Theme file not found: {local_theme_path}\n")
         if not download_theme(theme_name):
             return False  # Stop if download fails
 
@@ -413,7 +415,7 @@ def update_shell_config(theme_name: str, shell: str, config_file: str) -> bool |
             f.writelines(final_lines)
         return True
     except Exception as e:
-        print(f"Error updating config file: {e}")
+        sys.stderr.write(f"Error updating config file: {e}")
         return False
 
 
@@ -425,7 +427,7 @@ def download_theme(theme_name: str) -> bool:
     theme_filename = f"{theme_name}.omp.json"
     local_theme_path = os.path.join(THEMES_DIR, theme_filename)
 
-    print(f"Downloading '{theme_name}'...")
+    sys.stdout.write(f"Downloading '{theme_name}'...\n")
 
     # Try official repository first
     theme_url = f"https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/{theme_filename}"
@@ -463,7 +465,9 @@ def download_theme(theme_name: str) -> bool:
         except Exception:
             continue  # Try next repository
 
-    print(f"Error downloading theme: Theme '{theme_name}' not found in any repository")
+    sys.stderr.write(
+        f"Error downloading theme: Theme '{theme_name}' not found in any repository.\n"
+    )
     return False
 
 
@@ -1214,46 +1218,39 @@ def main() -> None:
     """Main entry point for the oh-my-theme application."""
     shell, config_file = get_shell_info()
     if not shell:
-        print("Unsupported shell or shell not detected. Exiting.")
+        sys.stderr.write("Unsupported shell or shell not detected. Exiting.")
         sys.exit(1)
 
     try:
         curses.wrapper(main_ui)
     except curses.error as e:
-        print(f"Curses error: {e}")
+        sys.stderr.write(f"Curses error: {e}")
     except (KeyboardInterrupt, EOFError):
         pass  # Exit gracefully
 
     # Create stylized terminal output with ASCII box
     box_width = 70
-    print("\n" + "#" * box_width)
-    print("#" + " " * (box_width - 2) + "#")
-    print("#" + " Like oh-my-theme?".center(box_width - 2) + "#")
-    print(
-        "#"
-        + " Give it a 🌟 https://github.com/mikeisfree/oh-my-posh-Theme-Installer".center(
-            box_width - 2,
-        )
-        + "#",
-    )
-    print("#" + " " * (box_width - 2) + "#")
-    print("%" * box_width)
-    print("%" + " " * (box_width - 2) + "%")
-    print(
-        "%"
-        + " Remember to reload your shell to see theme changes:".center(box_width - 2)
-        + "%",
-    )
-    print("%" + " " * (box_width - 2) + "%")
-    print(
-        "%"
-        + f" >>> Run: source ~/{os.path.basename(config_file)} <<<".center(
-            box_width - 2,
-        )
-        + "%",
-    )
-    print("%" + " " * (box_width - 2) + "%")
-    print("%" * box_width)
+    github_url = "https://github.com/mikeisfree/oh-my-posh-Theme-Installer"
+    config_basename = os.path.basename(config_file) if config_file else ""
+
+    reload_msg = "Remember to reload your shell to see theme changes:"
+    run_cmd = f">>> Run: source ~/{config_basename} <<<"
+
+    output = f"""
+{"#" * box_width}
+{"#" + " " * (box_width - 2) + "#"}
+{"#" + " Like oh-my-theme?".center(box_width - 2) + "#"}
+{"#" + f" Give it a 🌟 {github_url}".center(box_width - 2) + "#"}
+{"#" + " " * (box_width - 2) + "#"}
+{"%" * box_width}
+{"%" + " " * (box_width - 2) + "%"}
+{"%" + f" {reload_msg}".center(box_width - 2) + "%"}
+{"%" + " " * (box_width - 2) + "%"}
+{"%" + f" {run_cmd}".center(box_width - 2) + "%"}
+{"%" + " " * (box_width - 2) + "%"}
+{"%" * box_width}
+"""
+    sys.stdout.write(output)
 
 
 if __name__ == "__main__":
