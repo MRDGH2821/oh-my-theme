@@ -8,14 +8,8 @@ import sys
 from collections import OrderedDict
 from urllib import request
 
-# Import new modules for search and repository functionality
-try:
-    from .repositories import handle_add_repository
-    from .search import draw_panel_with_search, filter_themes, handle_search_mode
-except ImportError:
-    # Fallback for when running main.py directly
-    from repositories import handle_add_repository
-    from search import draw_panel_with_search, filter_themes, handle_search_mode
+from .repositories import handle_add_repository
+from .search import draw_panel_with_search, filter_themes, handle_search_mode
 
 # --- Configuration ---
 API_URL = "https://api.github.com/repos/JanDeDobbeleer/oh-my-posh/contents/themes"
@@ -29,7 +23,7 @@ CACHE_EXPIRY_SECONDS = 300  # 5 minutes cache expiry for file modification check
 
 
 def fetch_remote_themes() -> list[str]:
-    """Fetches the list of available themes from all repositories (official + custom)."""
+    """Fetch the list of available themes from all repositories (official + custom)."""
     all_themes: set[str] = set()
 
     # Fetch from official Oh My Posh repository
@@ -48,13 +42,8 @@ def fetch_remote_themes() -> list[str]:
         pass  # Continue even if official repo fails
 
     # Fetch from custom repositories
-    try:
-        from .config import get_custom_repositories
-        from .repositories import fetch_themes_from_repo
-    except ImportError:
-        # Fallback for when running main.py directly
-        from config import get_custom_repositories
-        from repositories import fetch_themes_from_repo
+    from .config import get_custom_repositories
+    from .repositories import fetch_themes_from_repo
 
     custom_repos = get_custom_repositories()
     for repo_url in custom_repos:
@@ -351,11 +340,7 @@ def generate_preview_text(metadata: dict) -> str:
     This function is deprecated. Use preview.show_enhanced_preview() instead.
     Kept for backward compatibility.
     """
-    try:
-        from .preview import _generate_enhanced_preview_content
-    except ImportError:
-        # Fallback for when running main.py directly
-        from preview import _generate_enhanced_preview_content
+    from .preview import _generate_enhanced_preview_content
 
     # Convert old metadata format to new format if needed
     if metadata and "name" in metadata:
@@ -451,13 +436,8 @@ def download_theme(theme_name: str) -> bool:
         pass  # Try custom repositories
 
     # Try custom repositories
-    try:
-        from .config import get_custom_repositories
-        from .repositories import fetch_themes_from_repo, install_custom_themes
-    except ImportError:
-        # Fallback for when running main.py directly
-        from config import get_custom_repositories
-        from repositories import fetch_themes_from_repo, install_custom_themes
+    from .config import get_custom_repositories
+    from .repositories import fetch_themes_from_repo, install_custom_themes
 
     custom_repos = get_custom_repositories()
     for repo_url in custom_repos:
@@ -504,13 +484,8 @@ def download_theme_for_preview(theme_name: str) -> bool:
         pass  # Try custom repositories
 
     # Try custom repositories
-    try:
-        from .config import get_custom_repositories
-        from .repositories import fetch_themes_from_repo, install_custom_themes
-    except ImportError:
-        # Fallback for when running main.py directly
-        from config import get_custom_repositories
-        from repositories import fetch_themes_from_repo, install_custom_themes
+    from .config import get_custom_repositories
+    from .repositories import fetch_themes_from_repo, install_custom_themes
 
     custom_repos = get_custom_repositories()
     for repo_url in custom_repos:
@@ -708,11 +683,7 @@ def show_theme_preview(
         bool: True if user wants to keep downloaded theme, False otherwise
 
     """
-    try:
-        from .preview import show_enhanced_preview
-    except ImportError:
-        # Fallback for when running main.py directly
-        from preview import show_enhanced_preview
+    from .preview import show_enhanced_preview
 
     # Use the enhanced preview functionality
     # Determine if this is a local theme based on whether it was downloaded for preview
@@ -1178,19 +1149,11 @@ def main_ui(stdscr: curses.window) -> None:
 
             elif action == "customize":
                 # Import editor module
-                try:
-                    from .editor import (
-                        _show_save_options_dialog,
-                        save_theme_changes,
-                        show_color_editor,
-                    )
-                except ImportError:
-                    # Fallback for when running main.py directly
-                    from editor import (
-                        _show_save_options_dialog,
-                        save_theme_changes,
-                        show_color_editor,
-                    )
+                from .editor import (
+                    _show_save_options_dialog,
+                    save_theme_changes,
+                    show_color_editor,
+                )
 
                 theme_path = os.path.join(THEMES_DIR, f"{selected_theme}.omp.json")
 

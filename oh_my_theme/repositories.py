@@ -483,11 +483,7 @@ def handle_add_repository(stdscr: curses.window, themes_dir: str) -> tuple[bool,
 
     if success_count > 0:
         # Add repository to configuration for future remote theme fetching
-        try:
-            from .config import add_custom_repository
-        except ImportError:
-            # Fallback for when running directly
-            from config import add_custom_repository
+        from .config import add_custom_repository
 
         add_custom_repository(repo_url)
         return True, f"Installed {success_count}/{total_count} custom themes"
