@@ -3,6 +3,7 @@
 This module provides real-time search and filtering capabilities for both
 local and remote themes with highlighting and keyboard navigation.
 """
+
 from __future__ import annotations
 
 import curses
@@ -52,13 +53,13 @@ def show_search_bar(stdscr: curses.window) -> str | None:
 
         key = search_bar.getch()
 
-        if key == 27:  # ESC - cancel search
+        if key == curses.KEY_EXIT:  # ESC - cancel search
             curses.curs_set(0)
             return None
-        if key in [10, 13]:  # Enter - confirm search
+        if key == curses.KEY_ENTER:  # Enter - confirm search
             curses.curs_set(0)
             return query
-        if key in [curses.KEY_BACKSPACE, 127, 8]:  # Backspace
+        if key == curses.KEY_BACKSPACE:  # Backspace
             if query:
                 query = query[:-1]
                 cursor_pos = max(8, cursor_pos - 1)
@@ -84,7 +85,6 @@ def filter_themes(themes: list[str], query: str) -> list[str]:
 
     query = query.strip().lower()
     return [theme for theme in themes if query in theme.lower()]
-
 
 
 def highlight_match(theme_name: str, query: str) -> list[tuple[str, bool]]:
